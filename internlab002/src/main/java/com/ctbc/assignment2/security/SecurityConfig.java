@@ -61,7 +61,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/register").permitAll()
 
-                        // Read APIs: any logged-in role can view
+                        // Public read: anyone can browse category/course lists
+                        .requestMatchers(HttpMethod.GET, "/api/category/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/course/**").permitAll()
+
+                        // Other GET APIs: require login
                         .requestMatchers(HttpMethod.GET, "/api/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
 
                         // Write APIs: allow any logged-in role (lab/demo purpose)

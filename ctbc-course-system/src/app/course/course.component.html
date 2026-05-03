@@ -11,7 +11,7 @@
     {{ errorMessage }}
   </div>
 
-  <div class="card mb-4">
+  <div *ngIf="isLoggedIn" class="card mb-4">
     <div class="card-header">新增課程</div>
     <div class="card-body">
       <form #courseForm="ngForm" (ngSubmit)="onAddCourse()">
@@ -46,14 +46,16 @@
             />
           </div>
           <div class="col-md-2">
-            <label class="form-label">類別 ID</label>
-            <input
-              class="form-control"
-              type="number"
+            <label class="form-label">類別</label>
+            <select
+              class="form-select"
               name="newCourseCategoryId"
               [(ngModel)]="newCourse.categoryId"
               [disabled]="isLoading"
-            />
+            >
+              <option [ngValue]="undefined">— 不設類別 —</option>
+              <option *ngFor="let cat of categories" [ngValue]="cat.id">{{ cat.categoryName }}</option>
+            </select>
           </div>
 
           <div class="col-12">
@@ -75,8 +77,8 @@
               <th>名稱</th>
               <th>描述</th>
               <th style="width: 120px">價格</th>
-              <th style="width: 120px">類別 ID</th>
-              <th style="width: 240px">操作</th>
+              <th style="width: 160px">類別</th>
+              <th *ngIf="isLoggedIn" style="width: 240px">操作</th>
             </tr>
           </thead>
           <tbody>
@@ -117,18 +119,20 @@
                 <ng-template #viewPrice>{{ c.price }}</ng-template>
               </td>
               <td>
-                <ng-container *ngIf="c.isEditing; else viewCategoryId">
-                  <input
-                    class="form-control form-control-sm"
-                    type="number"
+                <ng-container *ngIf="c.isEditing; else viewCategory">
+                  <select
+                    class="form-select form-select-sm"
                     [name]="'categoryId-' + (c.id ?? 'tmp')"
                     [(ngModel)]="c.categoryId"
                     [disabled]="isLoading"
-                  />
+                  >
+                    <option [ngValue]="undefined">— 不設類別 —</option>
+                    <option *ngFor="let cat of categories" [ngValue]="cat.id">{{ cat.categoryName }}</option>
+                  </select>
                 </ng-container>
-                <ng-template #viewCategoryId>{{ c.categoryId }}</ng-template>
+                <ng-template #viewCategory>{{ getCategoryName(c.categoryId) }}</ng-template>
               </td>
-              <td>
+              <td *ngIf="isLoggedIn">
                 <div class="btn-group" role="group" aria-label="Course actions">
                   <button
                     *ngIf="!c.isEditing"
@@ -172,7 +176,7 @@
               </td>
             </tr>
             <tr *ngIf="!isLoading && courses.length === 0">
-              <td colspan="6" class="text-center text-muted py-4">目前沒有資料</td>
+              <td [attr.colspan]="isLoggedIn ? 6 : 5" class="text-center text-muted py-4">目前沒有資料</td>
             </tr>
           </tbody>
         </table>

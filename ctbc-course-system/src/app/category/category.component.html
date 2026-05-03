@@ -11,7 +11,7 @@
     {{ errorMessage }}
   </div>
 
-  <div class="card mb-4">
+  <div *ngIf="isLoggedIn" class="card mb-4">
     <div class="card-header">新增類別</div>
     <div class="card-body">
       <form #categoryForm="ngForm" (ngSubmit)="onAddCategory()">
@@ -45,7 +45,7 @@
             <tr>
               <th style="width: 80px">ID</th>
               <th>名稱</th>
-              <th style="width: 240px">操作</th>
+              <th *ngIf="isLoggedIn" style="width: 240px">操作</th>
             </tr>
           </thead>
           <tbody>
@@ -62,7 +62,7 @@
                 </ng-container>
                 <ng-template #viewName>{{ c.categoryName }}</ng-template>
               </td>
-              <td>
+              <td *ngIf="isLoggedIn">
                 <div class="btn-group" role="group" aria-label="Category actions">
                   <button
                     *ngIf="!c.isEditing"
@@ -106,7 +106,7 @@
               </td>
             </tr>
             <tr *ngIf="!isLoading && categories.length === 0">
-              <td colspan="3" class="text-center text-muted py-4">目前沒有資料</td>
+              <td [attr.colspan]="isLoggedIn ? 3 : 2" class="text-center text-muted py-4">目前沒有資料</td>
             </tr>
           </tbody>
         </table>

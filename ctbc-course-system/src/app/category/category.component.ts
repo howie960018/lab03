@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { finalize } from 'rxjs';
 
+import { AuthService } from '../auth/auth.service';
 import { Category } from '../models/category';
 import { CategoryService } from '../services/category.service';
 
@@ -21,7 +22,14 @@ export class CategoryComponent implements OnInit {
 
   private readonly originalSnapshot = new WeakMap<Category, Pick<Category, 'categoryName'>>();
 
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(
+    private readonly categoryService: CategoryService,
+    private readonly authService: AuthService
+  ) {}
+
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
 
   ngOnInit(): void {
     this.reloadData();
@@ -50,19 +58,32 @@ export class CategoryComponent implements OnInit {
       });
   }
 
+  private validateCategory(category: Category, currentId?: number): string | null {
+    const name = (category.categoryName ?? '').trim();
+    if (!name) return '類別名稱為必填。';
+
+    const duplicate = this.categories.some(
+      (c) => c.categoryName.trim() === name && c.id !== currentId
+    );
+    if (duplicate) return `類別名稱「${name}」已存在，請使用其他名稱。`;
+
+    return null;
+  }
+
   onAddCategory(): void {
-    this.isLoading = true;
     this.errorMessage = '';
 
     const payload: Category = {
       categoryName: (this.newCategory.categoryName ?? '').trim()
     };
 
-    if (!payload.categoryName) {
-      this.isLoading = false;
-      this.errorMessage = '類別名稱為必填。';
+    const validationError = this.validateCategory(payload);
+    if (validationError) {
+      this.errorMessage = validationError;
       return;
     }
+
+    this.isLoading = true;
 
     this.categoryService
       .save(payload)
@@ -74,14 +95,14 @@ export class CategoryComponent implements OnInit {
         },
         error: (error) => {
           console.error(error);
-          this.errorMessage = '新增類別失敗，請稍後再試。';
+          this.errorMessage = error?.error?.message ?? '新增類別失敗，請稍後再試。';
         }
       });
   }
 
   onDeleteCategory(id: number | undefined): void {
     if (id === undefined) {
-      this.errorMessage = '刪除失敗：id 不可為空。';
+      this.errorMessage = '刪除失敗：找不到對應的類別 ID。';
       return;
     }
 
@@ -95,7 +116,7 @@ export class CategoryComponent implements OnInit {
         next: () => this.reloadData(),
         error: (error) => {
           console.error(error);
-          this.errorMessage = '刪除類別失敗，請稍後再試。';
+          this.errorMessage = error?.error?.message ?? '刪除類別失敗，請稍後再試。';
         }
       });
   }
@@ -123,11 +144,10 @@ export class CategoryComponent implements OnInit {
 
   onUpdateCategory(category: Category): void {
     if (category.id === undefined) {
-      this.errorMessage = '更新失敗：id 不可為空。';
+      this.errorMessage = '更新失敗：找不到對應的類別 ID。';
       return;
     }
 
-    this.isLoading = true;
     this.errorMessage = '';
 
     const payload: Category = {
@@ -135,11 +155,13 @@ export class CategoryComponent implements OnInit {
       categoryName: (category.categoryName ?? '').trim()
     };
 
-    if (!payload.categoryName) {
-      this.isLoading = false;
-      this.errorMessage = '類別名稱為必填。';
+    const validationError = this.validateCategory(payload, category.id);
+    if (validationError) {
+      this.errorMessage = validationError;
       return;
     }
+
+    this.isLoading = true;
 
     this.categoryService
       .save(payload)
@@ -152,7 +174,7 @@ export class CategoryComponent implements OnInit {
         },
         error: (error) => {
           console.error(error);
-          this.errorMessage = '更新類別失敗，請稍後再試。';
+          this.errorMessage = error?.error?.message ?? '更新類別失敗，請稍後再試。';
         }
       });
   }
