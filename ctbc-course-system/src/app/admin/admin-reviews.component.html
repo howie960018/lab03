@@ -1,0 +1,37 @@
+<div class="container py-4">
+  <h2 class="mb-4">評論管理</h2>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">{{errorMessage}}</div>
+  <div *ngIf="isLoading" class="text-center py-5"><div class="spinner-border" role="status"></div></div>
+
+  <table class="table table-bordered" *ngIf="!isLoading">
+    <thead class="table-light">
+      <tr>
+        <th>課程</th>
+        <th>評論者</th>
+        <th>評分</th>
+        <th>內容</th>
+        <th>時間</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let r of reviews">
+        <td>{{r.courseName}}</td>
+        <td>{{r.reviewerUsername}}</td>
+        <td class="text-warning">
+          <ng-container *ngFor="let s of stars(r.rating)">★</ng-container>
+          <ng-container *ngFor="let s of stars(5 - r.rating)"><span class="text-muted">★</span></ng-container>
+        </td>
+        <td>{{r.comment}}</td>
+        <td class="text-muted small">{{r.createdAt | date:'yyyy-MM-dd'}}</td>
+        <td>
+          <button class="btn btn-sm btn-outline-danger" (click)="onDelete(r.id)">刪除</button>
+        </td>
+      </tr>
+      <tr *ngIf="reviews.length === 0">
+        <td colspan="6" class="text-center text-muted">尚無評論</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

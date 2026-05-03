@@ -1,0 +1,27 @@
+<div class="container py-4">
+  <h2 class="mb-4">個人資料</h2>
+
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border" role="status"></div>
+  </div>
+
+  <div *ngIf="profile && !isLoading" class="card" style="max-width: 480px">
+    <div class="card-body">
+      <div class="d-flex align-items-center mb-4">
+        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
+          style="width:64px;height:64px;font-size:1.8rem">
+          {{profile.username[0].toUpperCase()}}
+        </div>
+        <div>
+          <h4 class="mb-0">{{profile.username}}</h4>
+          <span class="badge bg-secondary">{{roleLabel(profile.role)}}</span>
+        </div>
+      </div>
+      <table class="table table-borderless mb-0">
+        <tr><th>帳號</th><td>{{profile.username}}</td></tr>
+        <tr><th>身分</th><td>{{roleLabel(profile.role)}}</td></tr>
+        <tr><th>ID</th><td>#{{profile.id}}</td></tr>
+      </table>
+    </div>
+  </div>
+</div>

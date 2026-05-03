@@ -1,0 +1,92 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">我的課程</h2>
+    <button class="btn btn-primary" (click)="showForm = !showForm">
+      {{showForm ? '取消' : '新增課程'}}
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">{{errorMessage}}</div>
+
+  <div class="card mb-4" *ngIf="showForm">
+    <div class="card-header fw-semibold">新增課程</div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">課程名稱 *</label>
+          <input type="text" class="form-control" [(ngModel)]="newCourse.courseName">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">價格</label>
+          <input type="number" class="form-control" [(ngModel)]="newCourse.price">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">類別</label>
+          <select class="form-select" [(ngModel)]="newCourse.categoryId">
+            <option [ngValue]="undefined">無類別</option>
+            <option *ngFor="let c of categories" [ngValue]="c.id">{{c.categoryName}}</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">課程摘要</label>
+          <input type="text" class="form-control" [(ngModel)]="newCourse.courseSummary">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">難度</label>
+          <input type="text" class="form-control" placeholder="初階/中階/高階" [(ngModel)]="newCourse.level">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">時數</label>
+          <input type="number" class="form-control" [(ngModel)]="newCourse.durationHours">
+        </div>
+      </div>
+      <div class="mt-3">
+        <button class="btn btn-success me-2" (click)="onSubmit()">儲存</button>
+        <button class="btn btn-outline-secondary" (click)="showForm = false">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="text-center py-3">
+    <div class="spinner-border spinner-border-sm"></div>
+  </div>
+
+  <table class="table table-bordered" *ngIf="!isLoading">
+    <thead class="table-light">
+      <tr>
+        <th>課程名稱</th>
+        <th>類別</th>
+        <th>價格</th>
+        <th>難度</th>
+        <th>狀態</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of courses">
+        <td>
+          <a [routerLink]="['/courses', c.id]">{{c.courseName}}</a>
+        </td>
+        <td>{{getCategoryName(c.categoryId)}}</td>
+        <td>NT$ {{c.price | number}}</td>
+        <td>{{c.level || '—'}}</td>
+        <td>
+          <span class="badge"
+            [ngClass]="c.status === 'PUBLISHED' ? 'bg-success' : c.status === 'ARCHIVED' ? 'bg-secondary' : 'bg-warning text-dark'">
+            {{statusLabel(c.status)}}
+          </span>
+        </td>
+        <td>
+          <div class="btn-group">
+            <button *ngIf="c.status !== 'PUBLISHED'" class="btn btn-sm btn-outline-success" (click)="onUpdateStatus(c, 'PUBLISHED')">發布</button>
+            <button *ngIf="c.status === 'PUBLISHED'" class="btn btn-sm btn-outline-warning" (click)="onUpdateStatus(c, 'DRAFT')">取消發布</button>
+            <button *ngIf="c.status !== 'ARCHIVED'" class="btn btn-sm btn-outline-secondary" (click)="onUpdateStatus(c, 'ARCHIVED')">封存</button>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="courses.length === 0">
+        <td colspan="6" class="text-center text-muted">尚無課程</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

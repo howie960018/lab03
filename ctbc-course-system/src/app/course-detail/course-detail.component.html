@@ -1,0 +1,118 @@
+<div class="container py-4" *ngIf="!isLoading && course">
+  <div class="row">
+    <div class="col-lg-8">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a routerLink="/courses">課程</a></li>
+          <li class="breadcrumb-item active">{{course.courseName}}</li>
+        </ol>
+      </nav>
+
+      <h1 class="mb-2">{{course.courseName}}</h1>
+      <p class="lead text-muted">{{course.courseSummary}}</p>
+
+      <div class="d-flex gap-3 mb-3 text-secondary small">
+        <span *ngIf="course.instructorName"><i class="bi bi-person"></i> {{course.instructorName}}</span>
+        <span *ngIf="course.level"><i class="bi bi-bar-chart"></i> {{course.level}}</span>
+        <span *ngIf="course.durationHours"><i class="bi bi-clock"></i> {{course.durationHours}} 小時</span>
+        <span *ngIf="course.category"><i class="bi bi-tag"></i> {{course.category.categoryName}}</span>
+      </div>
+
+      <div *ngIf="course.courseDescription" class="mb-4">
+        <h4>課程介紹</h4>
+        <p style="white-space: pre-wrap">{{course.courseDescription}}</p>
+      </div>
+
+      <div *ngIf="chapters.length > 0" class="mb-4">
+        <h4>課程章節</h4>
+        <div class="accordion" id="chaptersAccordion">
+          <div class="accordion-item" *ngFor="let ch of chapters; let i = index">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button"
+                data-bs-toggle="collapse" [attr.data-bs-target]="'#chapter-' + i">
+                第 {{i + 1}} 章：{{ch.title}}
+              </button>
+            </h2>
+            <div [id]="'chapter-' + i" class="accordion-collapse collapse" data-bs-parent="#chaptersAccordion">
+              <div class="accordion-body">
+                <p *ngIf="ch.description">{{ch.description}}</p>
+                <p *ngIf="ch.videoPlaceholderUrl" class="text-muted small">
+                  <i class="bi bi-play-circle"></i> {{ch.videoPlaceholderUrl}}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <h4>學員評論 ({{reviews.length}})</h4>
+        <ng-container *ngIf="authService.isLoggedIn()">
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6 class="card-title">發表評論</h6>
+              <div class="mb-2">
+                <label class="form-label">評分</label>
+                <select class="form-select w-auto" [(ngModel)]="newRating">
+                  <option value="1">1 星</option>
+                  <option value="2">2 星</option>
+                  <option value="3">3 星</option>
+                  <option value="4">4 星</option>
+                  <option value="5">5 星</option>
+                </select>
+              </div>
+              <div class="mb-2">
+                <textarea class="form-control" rows="3" placeholder="分享你的學習心得..." [(ngModel)]="newComment"></textarea>
+              </div>
+              <button class="btn btn-primary btn-sm" (click)="onSubmitReview()">送出評論</button>
+            </div>
+          </div>
+        </ng-container>
+
+        <div *ngFor="let review of reviews" class="card mb-2">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <strong>{{review.reviewerUsername}}</strong>
+              <span class="text-warning">
+                <ng-container *ngFor="let s of starsArray(review.rating)">★</ng-container>
+              </span>
+            </div>
+            <p class="mb-0 mt-1 text-muted">{{review.comment}}</p>
+          </div>
+        </div>
+
+        <p *ngIf="reviews.length === 0" class="text-muted">尚無評論</p>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card sticky-top" style="top: 80px">
+        <div class="card-body text-center">
+          <h2 class="text-primary mb-3">NT$ {{course.price | number}}</h2>
+
+          <div *ngIf="successMessage" class="alert alert-success py-2 mb-3">{{successMessage}}</div>
+          <div *ngIf="errorMessage" class="alert alert-danger py-2 mb-3">{{errorMessage}}</div>
+
+          <ng-container *ngIf="authService.isLoggedIn(); else loginCTA">
+            <ng-container *ngIf="cartService.inCart(course.id!)">
+              <button class="btn btn-secondary w-100 mb-2" disabled>已在購物車</button>
+              <a routerLink="/cart" class="btn btn-outline-primary w-100">前往結帳</a>
+            </ng-container>
+            <ng-container *ngIf="!cartService.inCart(course.id!)">
+              <button class="btn btn-primary w-100" (click)="onAddToCart()">加入購物車</button>
+            </ng-container>
+          </ng-container>
+
+          <ng-template #loginCTA>
+            <p class="text-muted small">請先登入以加入購物車</p>
+            <a routerLink="/login" class="btn btn-primary w-100">登入</a>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="isLoading" class="text-center py-5">
+  <div class="spinner-border" role="status"></div>
+</div>

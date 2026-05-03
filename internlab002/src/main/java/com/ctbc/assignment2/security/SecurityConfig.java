@@ -64,15 +64,41 @@ public class SecurityConfig {
                         // Public read: anyone can browse category/course lists
                         .requestMatchers(HttpMethod.GET, "/api/category/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/course/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/chapters/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/course/**").permitAll()
 
                         // Other GET APIs: require login
                         .requestMatchers(HttpMethod.GET, "/api/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
 
-                        // Write APIs: allow any logged-in role (lab/demo purpose)
+                        // Write APIs: allow any logged-in role
                         .requestMatchers(HttpMethod.POST, "/api/category/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
                         .requestMatchers(HttpMethod.DELETE, "/api/category/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
                         .requestMatchers(HttpMethod.POST, "/api/course/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
                         .requestMatchers(HttpMethod.DELETE, "/api/course/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
+
+                        // Chapters: admin/instructor only for write
+                        .requestMatchers(HttpMethod.POST, "/api/chapters/**").hasAnyRole("ADMIN", "INSTRUCTOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/chapters/**").hasAnyRole("ADMIN", "INSTRUCTOR")
+
+                        // Orders: any authenticated user
+                        .requestMatchers("/api/orders/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
+
+                        // Enrollments: any authenticated user
+                        .requestMatchers("/api/enrollments/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
+
+                        // Profile: any authenticated user
+                        .requestMatchers("/api/profile/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
+
+                        // Admin stats: admin only
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // Instructor: instructor or admin
+                        .requestMatchers("/api/instructor/**").hasAnyRole("INSTRUCTOR", "ADMIN")
+
+                        // Reviews write: any authenticated user
+                        .requestMatchers(HttpMethod.POST, "/api/reviews/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/reviews/**").hasAnyRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/all").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )

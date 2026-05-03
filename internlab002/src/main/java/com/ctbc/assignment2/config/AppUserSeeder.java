@@ -21,5 +21,8 @@ public class AppUserSeeder implements CommandLineRunner {
         if (!appUserService.existsByUsername("user")) {
             appUserService.createUser("user", "user123", "USER");
         }
+        if (!appUserService.existsByUsername("instructor")) {
+            appUserService.createUser("instructor", "instructor123", "INSTRUCTOR");
+        }
     }
 }

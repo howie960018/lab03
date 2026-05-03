@@ -1,0 +1,31 @@
+<div class="container py-4">
+  <h2 class="mb-4">我的課程</h2>
+
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border" role="status"></div>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <div *ngIf="enrollments.length === 0" class="text-center py-5">
+      <p class="text-muted fs-5">您尚未購買任何課程</p>
+      <a routerLink="/courses" class="btn btn-primary">瀏覽課程</a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <div class="col" *ngFor="let e of enrollments">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">{{e.courseName}}</h5>
+            <p class="card-text text-muted small">
+              加入時間：{{e.enrolledAt | date:'yyyy-MM-dd'}}
+            </p>
+            <span class="badge bg-success">{{e.status === 'ACTIVE' ? '學習中' : e.status}}</span>
+          </div>
+          <div class="card-footer">
+            <a [routerLink]="['/courses', e.courseId]" class="btn btn-outline-primary btn-sm">進入課程</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

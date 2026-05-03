@@ -6,9 +6,20 @@ export interface Course {
   courseSummary?: string;
   courseDescription?: string;
   price?: number;
+  coverImageUrl?: string;
+  instructorName?: string;
+  durationHours?: number;
+  level?: string;
+  status?: string;
   category?: Category;
-
-  // UI helper field (backend accepts category object, and also provides a dedicated endpoint to save with categoryId)
   categoryId?: number;
   isEditing?: boolean;
+}
+
+export interface PageResult<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
 }

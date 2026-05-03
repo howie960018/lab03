@@ -2,12 +2,17 @@ package com.ctbc.assignment2.controller.rest;
 
 import com.ctbc.assignment2.bean.CourseBean;
 import com.ctbc.assignment2.bean.CourseCategoryBean;
+import com.ctbc.assignment2.bean.CourseStatus;
 import com.ctbc.assignment2.service.CourseBeanService;
 import com.ctbc.assignment2.service.CourseCategoryBeanService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 // @RestController: 標示這個類別是 RESTful 控制器，方法的返回值會自動轉成 JSON 格式回傳給客戶端（等同於 @Controller + @ResponseBody 的組合）
 // @RequestMapping("/api/course"): 定義這個控制器內所有 API 的共用 URL 前綴
@@ -66,5 +71,29 @@ public class CourseBeanRestController {
         CourseCategoryBean category = categoryService.findById(categoryId);
         course.setCategory(category);
         return courseService.save(course);
+    }
+
+    @PostMapping("/{id}/status")
+    public CourseBean updateStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        CourseStatus status = CourseStatus.valueOf(body.get("status"));
+        return courseService.updateStatus(id, status);
+    }
+
+    @GetMapping("/published")
+    public Page<CourseBean> getPublished(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Long categoryId) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        if (keyword != null && !keyword.isBlank() && categoryId != null) {
+            return courseService.findPublishedPageByCategoryIdsAndName(
+                    List.of(categoryId), keyword, pageable);
+        } else if (keyword != null && !keyword.isBlank()) {
+            return courseService.findPublishedPageByName(keyword, pageable);
+        } else if (categoryId != null) {
+            return courseService.findPublishedPageByCategoryIds(List.of(categoryId), pageable);
+        }
+        return courseService.findPublishedPage(pageable);
     }
 }

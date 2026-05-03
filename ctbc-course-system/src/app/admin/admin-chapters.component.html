@@ -1,0 +1,84 @@
+<div class="container py-4">
+  <h2 class="mb-4">章節管理</h2>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">{{errorMessage}}</div>
+
+  <div class="mb-3" style="max-width: 360px">
+    <label class="form-label fw-semibold">選擇課程</label>
+    <select class="form-select" [(ngModel)]="selectedCourseId" (change)="onCourseSelect()">
+      <option [ngValue]="undefined">-- 請選擇課程 --</option>
+      <option *ngFor="let c of courses" [ngValue]="c.id">{{c.courseName}}</option>
+    </select>
+  </div>
+
+  <ng-container *ngIf="selectedCourseId">
+    <div class="card mb-4">
+      <div class="card-header fw-semibold">新增章節</div>
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-md-5">
+            <input type="text" class="form-control" placeholder="章節標題 *" [(ngModel)]="newChapter.title">
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="說明" [(ngModel)]="newChapter.description">
+          </div>
+          <div class="col-md-2">
+            <input type="number" class="form-control" placeholder="排序" [(ngModel)]="newChapter.sortOrder">
+          </div>
+          <div class="col-md-1">
+            <button class="btn btn-primary w-100" (click)="onAdd()">新增</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading" class="text-center py-3">
+      <div class="spinner-border spinner-border-sm"></div>
+    </div>
+
+    <table class="table table-bordered" *ngIf="!isLoading">
+      <thead class="table-light">
+        <tr>
+          <th>排序</th>
+          <th>標題</th>
+          <th>說明</th>
+          <th>影片連結</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ch of chapters">
+          <td>
+            <input *ngIf="ch.isEditing" type="number" class="form-control form-control-sm" [(ngModel)]="ch.sortOrder" style="width:70px">
+            <span *ngIf="!ch.isEditing">{{ch.sortOrder}}</span>
+          </td>
+          <td>
+            <input *ngIf="ch.isEditing" type="text" class="form-control form-control-sm" [(ngModel)]="ch.title">
+            <span *ngIf="!ch.isEditing">{{ch.title}}</span>
+          </td>
+          <td>
+            <input *ngIf="ch.isEditing" type="text" class="form-control form-control-sm" [(ngModel)]="ch.description">
+            <span *ngIf="!ch.isEditing">{{ch.description}}</span>
+          </td>
+          <td>
+            <input *ngIf="ch.isEditing" type="text" class="form-control form-control-sm" [(ngModel)]="ch.videoPlaceholderUrl">
+            <span *ngIf="!ch.isEditing">{{ch.videoPlaceholderUrl}}</span>
+          </td>
+          <td>
+            <ng-container *ngIf="!ch.isEditing">
+              <button class="btn btn-sm btn-outline-primary me-1" (click)="onEdit(ch)">編輯</button>
+              <button class="btn btn-sm btn-outline-danger" (click)="onDelete(ch.id)">刪除</button>
+            </ng-container>
+            <ng-container *ngIf="ch.isEditing">
+              <button class="btn btn-sm btn-success me-1" (click)="onSave(ch)">儲存</button>
+              <button class="btn btn-sm btn-outline-secondary" (click)="onCancel(ch)">取消</button>
+            </ng-container>
+          </td>
+        </tr>
+        <tr *ngIf="chapters.length === 0">
+          <td colspan="5" class="text-center text-muted">此課程尚無章節</td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-container>
+</div>

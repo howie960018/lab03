@@ -1,0 +1,35 @@
+<div class="container py-4">
+  <h2 class="mb-4">講師儀表板</h2>
+
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border" role="status"></div>
+  </div>
+
+  <div *ngIf="stats && !isLoading" class="row g-4">
+    <div class="col-sm-6">
+      <div class="card text-center border-primary">
+        <div class="card-body">
+          <h1 class="display-4 fw-bold text-primary">{{stats.courseCount}}</h1>
+          <p class="card-text text-muted">我的課程數</p>
+        </div>
+        <div class="card-footer">
+          <a routerLink="/instructor/courses" class="btn btn-sm btn-outline-primary">管理課程</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card text-center border-success">
+        <div class="card-body">
+          <h1 class="display-4 fw-bold text-success">{{stats.totalEnrollments}}</h1>
+          <p class="card-text text-muted">學員總報名數</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4" *ngIf="!isLoading">
+    <div class="list-group" style="max-width: 320px">
+      <a routerLink="/instructor/courses" class="list-group-item list-group-item-action">我的課程</a>
+    </div>
+  </div>
+</div>

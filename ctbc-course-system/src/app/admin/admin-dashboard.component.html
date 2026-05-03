@@ -1,0 +1,65 @@
+<div class="container py-4">
+  <h2 class="mb-4">管理員儀表板</h2>
+
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border" role="status"></div>
+  </div>
+
+  <div *ngIf="stats && !isLoading" class="row g-4">
+    <div class="col-sm-6 col-lg-3">
+      <div class="card text-center border-primary">
+        <div class="card-body">
+          <h1 class="display-4 fw-bold text-primary">{{stats.courseCount}}</h1>
+          <p class="card-text text-muted">課程總數</p>
+        </div>
+        <div class="card-footer">
+          <a routerLink="/admin/courses" class="btn btn-sm btn-outline-primary">管理課程</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="card text-center border-success">
+        <div class="card-body">
+          <h1 class="display-4 fw-bold text-success">{{stats.categoryCount}}</h1>
+          <p class="card-text text-muted">類別總數</p>
+        </div>
+        <div class="card-footer">
+          <a routerLink="/admin/categories" class="btn btn-sm btn-outline-success">管理類別</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="card text-center border-info">
+        <div class="card-body">
+          <h1 class="display-4 fw-bold text-info">{{stats.totalEnrollments}}</h1>
+          <p class="card-text text-muted">報名總數</p>
+        </div>
+        <div class="card-footer">
+          <a routerLink="/my-courses" class="btn btn-sm btn-outline-info">查看</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="card text-center border-warning">
+        <div class="card-body">
+          <h1 class="display-4 fw-bold text-warning">{{stats.userCount}}</h1>
+          <p class="card-text text-muted">使用者總數</p>
+        </div>
+        <div class="card-footer">
+          <span class="btn btn-sm btn-outline-warning disabled">查看</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4" *ngIf="!isLoading">
+    <div class="col-md-6">
+      <div class="list-group">
+        <a routerLink="/admin/courses" class="list-group-item list-group-item-action">課程管理</a>
+        <a routerLink="/admin/categories" class="list-group-item list-group-item-action">類別管理</a>
+        <a routerLink="/admin/chapters" class="list-group-item list-group-item-action">章節管理</a>
+        <a routerLink="/admin/reviews" class="list-group-item list-group-item-action">評論管理</a>
+      </div>
+    </div>
+  </div>
+</div>

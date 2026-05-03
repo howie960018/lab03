@@ -26,7 +26,15 @@ export class LoginComponent {
       .login({ username: this.username.trim(), password: this.password })
       .pipe(finalize(() => (this.isLoading = false)))
       .subscribe({
-        next: () => this.router.navigate(['/categories']),
+        next: () => {
+          if (this.authService.isAdmin()) {
+            this.router.navigate(['/admin/dashboard']);
+          } else if (this.authService.isInstructor()) {
+            this.router.navigate(['/instructor/dashboard']);
+          } else {
+            this.router.navigate(['/home']);
+          }
+        },
         error: (err) => {
           console.error(err);
           this.errorMessage = '登入失敗：帳號或密碼錯誤。';
