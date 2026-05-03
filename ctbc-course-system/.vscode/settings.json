@@ -1,0 +1,5 @@
+{
+  // Use the workspace TypeScript version (matches Angular build tooling)
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
+}

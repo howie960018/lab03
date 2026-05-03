@@ -1,0 +1,63 @@
+<div class="container py-4" style="max-width: 520px">
+  <h2 class="mb-3">註冊</h2>
+
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success" role="alert">
+    {{ successMessage }}
+  </div>
+
+  <form #registerForm="ngForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label class="form-label">帳號</label>
+      <input
+        class="form-control"
+        name="username"
+        [(ngModel)]="username"
+        required
+        minlength="4"
+        maxlength="40"
+        [disabled]="isLoading"
+      />
+      <div class="form-text">4 到 40 個字元。</div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">密碼</label>
+      <input
+        class="form-control"
+        type="password"
+        name="password"
+        [(ngModel)]="password"
+        required
+        minlength="6"
+        maxlength="60"
+        [disabled]="isLoading"
+      />
+      <div class="form-text">6 到 60 個字元。</div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">確認密碼</label>
+      <input
+        class="form-control"
+        type="password"
+        name="confirmPassword"
+        [(ngModel)]="confirmPassword"
+        required
+        [disabled]="isLoading"
+      />
+    </div>
+
+    <button class="btn btn-primary w-100" type="submit" [disabled]="isLoading || registerForm.invalid">
+      <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+      註冊
+    </button>
+
+    <div class="text-muted mt-3">
+      已有帳號？ <a routerLink="/login">回登入</a>
+    </div>
+  </form>
+</div>

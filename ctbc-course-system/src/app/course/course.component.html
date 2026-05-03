@@ -1,0 +1,182 @@
+<div class="container py-4">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h2 class="mb-0">課程管理</h2>
+    <div *ngIf="isLoading" class="d-flex align-items-center gap-2">
+      <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+      <span class="text-muted">處理中...</span>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">新增課程</div>
+    <div class="card-body">
+      <form #courseForm="ngForm" (ngSubmit)="onAddCourse()">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">名稱</label>
+            <input
+              class="form-control"
+              name="newCourseName"
+              [(ngModel)]="newCourse.courseName"
+              required
+              [disabled]="isLoading"
+            />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">描述</label>
+            <input
+              class="form-control"
+              name="newCourseDescription"
+              [(ngModel)]="newCourse.courseSummary"
+              [disabled]="isLoading"
+            />
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">價格</label>
+            <input
+              class="form-control"
+              type="number"
+              name="newCoursePrice"
+              [(ngModel)]="newCourse.price"
+              [disabled]="isLoading"
+            />
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">類別 ID</label>
+            <input
+              class="form-control"
+              type="number"
+              name="newCourseCategoryId"
+              [(ngModel)]="newCourse.categoryId"
+              [disabled]="isLoading"
+            />
+          </div>
+
+          <div class="col-12">
+            <button class="btn btn-primary" type="submit" [disabled]="isLoading || courseForm.invalid">新增</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">課程列表</div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 80px">ID</th>
+              <th>名稱</th>
+              <th>描述</th>
+              <th style="width: 120px">價格</th>
+              <th style="width: 120px">類別 ID</th>
+              <th style="width: 240px">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of courses; let i = index">
+              <td>{{ c.id }}</td>
+              <td>
+                <ng-container *ngIf="c.isEditing; else viewName">
+                  <input
+                    class="form-control form-control-sm"
+                    [name]="'name-' + (c.id ?? 'tmp')"
+                    [(ngModel)]="c.courseName"
+                    [disabled]="isLoading"
+                  />
+                </ng-container>
+                <ng-template #viewName>{{ c.courseName }}</ng-template>
+              </td>
+              <td>
+                <ng-container *ngIf="c.isEditing; else viewDesc">
+                  <input
+                    class="form-control form-control-sm"
+                    [name]="'desc-' + (c.id ?? 'tmp')"
+                    [(ngModel)]="c.courseSummary"
+                    [disabled]="isLoading"
+                  />
+                </ng-container>
+                <ng-template #viewDesc>{{ c.courseSummary }}</ng-template>
+              </td>
+              <td>
+                <ng-container *ngIf="c.isEditing; else viewPrice">
+                  <input
+                    class="form-control form-control-sm"
+                    type="number"
+                    [name]="'price-' + (c.id ?? 'tmp')"
+                    [(ngModel)]="c.price"
+                    [disabled]="isLoading"
+                  />
+                </ng-container>
+                <ng-template #viewPrice>{{ c.price }}</ng-template>
+              </td>
+              <td>
+                <ng-container *ngIf="c.isEditing; else viewCategoryId">
+                  <input
+                    class="form-control form-control-sm"
+                    type="number"
+                    [name]="'categoryId-' + (c.id ?? 'tmp')"
+                    [(ngModel)]="c.categoryId"
+                    [disabled]="isLoading"
+                  />
+                </ng-container>
+                <ng-template #viewCategoryId>{{ c.categoryId }}</ng-template>
+              </td>
+              <td>
+                <div class="btn-group" role="group" aria-label="Course actions">
+                  <button
+                    *ngIf="!c.isEditing"
+                    class="btn btn-outline-secondary btn-sm"
+                    type="button"
+                    (click)="onToggleModify(c)"
+                    [disabled]="isLoading"
+                  >
+                    編輯
+                  </button>
+
+                  <button
+                    *ngIf="c.isEditing"
+                    class="btn btn-success btn-sm"
+                    type="button"
+                    (click)="onUpdateCourse(c)"
+                    [disabled]="isLoading"
+                  >
+                    儲存
+                  </button>
+
+                  <button
+                    *ngIf="c.isEditing"
+                    class="btn btn-outline-secondary btn-sm"
+                    type="button"
+                    (click)="onCancelModify(c)"
+                    [disabled]="isLoading"
+                  >
+                    取消
+                  </button>
+
+                  <button
+                    class="btn btn-outline-danger btn-sm"
+                    type="button"
+                    (click)="onDeleteCourse(c.id)"
+                    [disabled]="isLoading"
+                  >
+                    刪除
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="!isLoading && courses.length === 0">
+              <td colspan="6" class="text-center text-muted py-4">目前沒有資料</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,41 @@
+<div class="container py-4" style="max-width: 520px">
+  <h2 class="mb-3">登入</h2>
+
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label class="form-label">帳號</label>
+      <input
+        class="form-control"
+        name="username"
+        [(ngModel)]="username"
+        required
+        [disabled]="isLoading"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">密碼</label>
+      <input
+        class="form-control"
+        type="password"
+        name="password"
+        [(ngModel)]="password"
+        required
+        [disabled]="isLoading"
+      />
+    </div>
+
+    <button class="btn btn-primary w-100" type="submit" [disabled]="isLoading || loginForm.invalid">
+      <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+      登入
+    </button>
+
+    <div class="text-muted mt-3">
+      還沒有帳號？ <a routerLink="/register">註冊</a>
+    </div>
+  </form>
+</div>
