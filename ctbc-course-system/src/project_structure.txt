@@ -1,0 +1,54 @@
+列出資料夾 PATH
+磁碟區序號為 7841-3D98
+C:.
+|   favicon.ico
+|   index.html
+|   main.ts
+|   project_structure.txt
+|   styles.css
+|   
++---app
+|   |   app-routing.module.ts
+|   |   app.component.css
+|   |   app.component.html
+|   |   app.component.spec.ts
+|   |   app.component.ts
+|   |   app.module.ts
+|   |   
+|   +---auth
+|   |   |   auth.guard.ts
+|   |   |   auth.interceptor.ts
+|   |   |   auth.models.ts
+|   |   |   auth.service.ts
+|   |   |   
+|   |   +---login
+|   |   |       login.component.css
+|   |   |       login.component.html
+|   |   |       login.component.ts
+|   |   |       
+|   |   \---register
+|   |           register.component.css
+|   |           register.component.html
+|   |           register.component.ts
+|   |           
+|   +---category
+|   |       category.component.css
+|   |       category.component.html
+|   |       category.component.ts
+|   |       
+|   +---course
+|   |       course.component.css
+|   |       course.component.html
+|   |       course.component.ts
+|   |       
+|   +---models
+|   |       category.ts
+|   |       course.ts
+|   |       
+|   \---services
+|           category.service.ts
+|           course.service.ts
+|           
+\---assets
+        .gitkeep
+        

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { finalize } from 'rxjs';
+import { catchError, EMPTY, finalize, switchMap } from 'rxjs';
 
 import { AuthService } from '../auth.service';
 
@@ -21,21 +21,35 @@ export class RegisterComponent {
   constructor(private readonly authService: AuthService, private readonly router: Router) {}
 
   onSubmit(): void {
+    const username = this.username.trim();
+
     this.isLoading = true;
     this.errorMessage = '';
     this.successMessage = '';
 
     this.authService
       .register({
-        username: this.username.trim(),
+        username,
         password: this.password,
         confirmPassword: this.confirmPassword
       })
-      .pipe(finalize(() => (this.isLoading = false)))
+      .pipe(
+        switchMap(() =>
+          this.authService.login({ username, password: this.password }).pipe(
+            catchError((err) => {
+              console.error(err);
+              this.successMessage = '註冊成功，但自動登入失敗，請手動登入。';
+              this.router.navigate(['/login']);
+              return EMPTY;
+            })
+          )
+        ),
+        finalize(() => (this.isLoading = false))
+      )
       .subscribe({
         next: () => {
-          this.successMessage = '註冊成功，請登入。';
-          setTimeout(() => this.router.navigate(['/login']), 600);
+          this.successMessage = '註冊成功，已自動登入。';
+          this.router.navigate(['/categories']);
         },
         error: (err) => {
           console.error(err);

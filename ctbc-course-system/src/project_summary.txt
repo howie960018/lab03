@@ -1,0 +1,1491 @@
+�C�X��Ƨ� PATH
+�ϺаϧǸ��� 7841-3D98
+C:.
+|   export_project.bat
+|   favicon.ico
+|   index.html
+|   main.ts
+|   project_structure.txt
+|   project_summary.txt
+|   styles.css
+|   
++---app
+|   |   app-routing.module.ts
+|   |   app.component.css
+|   |   app.component.html
+|   |   app.component.spec.ts
+|   |   app.component.ts
+|   |   app.module.ts
+|   |   
+|   +---auth
+|   |   |   auth.guard.ts
+|   |   |   auth.interceptor.ts
+|   |   |   auth.models.ts
+|   |   |   auth.service.ts
+|   |   |   
+|   |   +---login
+|   |   |       login.component.css
+|   |   |       login.component.html
+|   |   |       login.component.ts
+|   |   |       
+|   |   \---register
+|   |           register.component.css
+|   |           register.component.html
+|   |           register.component.ts
+|   |           
+|   +---category
+|   |       category.component.css
+|   |       category.component.html
+|   |       category.component.ts
+|   |       
+|   +---course
+|   |       course.component.css
+|   |       course.component.html
+|   |       course.component.ts
+|   |       
+|   +---models
+|   |       category.ts
+|   |       course.ts
+|   |       
+|   \---services
+|           category.service.ts
+|           course.service.ts
+|           
+\---assets
+        .gitkeep
+        
+
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\index.html 
+------------------------------------------ 
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>CtbcCourseSystem</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\main.ts 
+------------------------------------------ 
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+
+import { AppModule } from './app/app.module';
+
+
+platformBrowserDynamic().bootstrapModule(AppModule)
+  .catch(err => console.error(err));
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\project_structure.txt 
+------------------------------------------ 
+�C�X��Ƨ� PATH
+�ϺаϧǸ��� 7841-3D98
+C:.
+|   favicon.ico
+|   index.html
+|   main.ts
+|   project_structure.txt
+|   styles.css
+|   
++---app
+|   |   app-routing.module.ts
+|   |   app.component.css
+|   |   app.component.html
+|   |   app.component.spec.ts
+|   |   app.component.ts
+|   |   app.module.ts
+|   |   
+|   +---auth
+|   |   |   auth.guard.ts
+|   |   |   auth.interceptor.ts
+|   |   |   auth.models.ts
+|   |   |   auth.service.ts
+|   |   |   
+|   |   +---login
+|   |   |       login.component.css
+|   |   |       login.component.html
+|   |   |       login.component.ts
+|   |   |       
+|   |   \---register
+|   |           register.component.css
+|   |           register.component.html
+|   |           register.component.ts
+|   |           
+|   +---category
+|   |       category.component.css
+|   |       category.component.html
+|   |       category.component.ts
+|   |       
+|   +---course
+|   |       course.component.css
+|   |       course.component.html
+|   |       course.component.ts
+|   |       
+|   +---models
+|   |       category.ts
+|   |       course.ts
+|   |       
+|   \---services
+|           category.service.ts
+|           course.service.ts
+|           
+\---assets
+        .gitkeep
+        
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\styles.css 
+------------------------------------------ 
+/* You can add global styles to this file, and also import other style files */
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\app-routing.module.ts 
+------------------------------------------ 
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+import { CategoryComponent } from './category/category.component';
+import { CourseComponent } from './course/course.component';
+import { LoginComponent } from './auth/login/login.component';
+import { RegisterComponent } from './auth/register/register.component';
+
+const routes: Routes = [
+  { path: '', redirectTo: 'categories', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'categories', component: CategoryComponent },
+  { path: 'courses', component: CourseComponent },
+  { path: '**', redirectTo: 'categories' }
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule {}
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\app.component.css 
+------------------------------------------ 
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\app.component.html 
+------------------------------------------ 
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/categories">CTBC Course System</a>
+
+    <div class="navbar-nav">
+      <a class="nav-link" routerLink="/categories" routerLinkActive="active">類別管理</a>
+      <a class="nav-link" routerLink="/courses" routerLinkActive="active">課程管理</a>
+
+      <ng-container *ngIf="authService.isLoggedIn(); else loggedOutNav">
+        <button class="btn btn-sm btn-outline-light ms-3" type="button" (click)="onLogout()">登出</button>
+      </ng-container>
+
+      <ng-template #loggedOutNav>
+        <a class="nav-link ms-2" routerLink="/login" routerLinkActive="active">登入</a>
+        <a class="nav-link" routerLink="/register" routerLinkActive="active">註冊</a>
+      </ng-template>
+    </div>
+  </div>
+</nav>
+
+<router-outlet></router-outlet>
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\app.component.spec.ts 
+------------------------------------------ 
+import { TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AppComponent } from './app.component';
+
+describe('AppComponent', () => {
+  beforeEach(() => TestBed.configureTestingModule({
+    imports: [RouterTestingModule],
+    declarations: [AppComponent]
+  }));
+
+  it('should create the app', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    expect(app).toBeTruthy();
+  });
+
+  it(`should have as title 'ctbc-course-system'`, () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    expect(app.title).toEqual('ctbc-course-system');
+  });
+
+  it('should render navbar brand', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.navbar-brand')?.textContent).toContain('CTBC Course System');
+  });
+});
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\app.component.ts 
+------------------------------------------ 
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+
+import { AuthService } from './auth/auth.service';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title = 'ctbc-course-system';
+
+  constructor(public readonly authService: AuthService, private readonly router: Router) {}
+
+  onLogout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+}
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\app.module.ts 
+------------------------------------------ 
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+
+import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
+import { CategoryComponent } from './category/category.component';
+import { CourseComponent } from './course/course.component';
+import { LoginComponent } from './auth/login/login.component';
+import { RegisterComponent } from './auth/register/register.component';
+import { AuthInterceptor } from './auth/auth.interceptor';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    CategoryComponent,
+    CourseComponent,
+    LoginComponent,
+    RegisterComponent
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule,
+    HttpClientModule
+  ],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\auth\auth.guard.ts 
+------------------------------------------ 
+import { Injectable } from '@angular/core';
+import { CanActivate, Router, UrlTree } from '@angular/router';
+
+import { AuthService } from './auth.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthGuard implements CanActivate {
+  constructor(private readonly authService: AuthService, private readonly router: Router) {}
+
+  canActivate(): boolean | UrlTree {
+    if (this.authService.isLoggedIn()) {
+      return true;
+    }
+    return this.router.parseUrl('/login');
+  }
+}
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\auth\auth.interceptor.ts 
+------------------------------------------ 
+import { Injectable } from '@angular/core';
+import {
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest
+} from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+import { AuthService } from './auth.service';
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+  constructor(private readonly authService: AuthService) {}
+
+  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    const isApiCall = req.url.startsWith('/api/') || req.url.includes('://') && req.url.includes('/api/');
+    const isAuthCall = req.url.includes('/api/auth/');
+
+    if (!isApiCall || isAuthCall) {
+      return next.handle(req);
+    }
+
+    const token = this.authService.getToken();
+    if (!token) {
+      return next.handle(req);
+    }
+
+    const cloned = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return next.handle(cloned);
+  }
+}
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\auth\auth.models.ts 
+------------------------------------------ 
+export interface AuthRequest {
+  username: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  tokenType: string;
+  expiresInMs: number;
+}
+
+export interface RegisterRequest {
+  username: string;
+  password: string;
+  confirmPassword: string;
+}
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\auth\auth.service.ts 
+------------------------------------------ 
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
+
+import { AuthRequest, AuthResponse, RegisterRequest } from './auth.models';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private readonly tokenKey = 'ctbc.jwt';
+  private readonly apiBase = '';
+
+  constructor(private readonly http: HttpClient) {}
+
+  getToken(): string | null {
+    return localStorage.getItem(this.tokenKey);
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getToken();
+  }
+
+  logout(): void {
+    localStorage.removeItem(this.tokenKey);
+  }
+
+  login(request: AuthRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiBase}/api/auth/login`, request).pipe(
+      tap((resp) => {
+        if (resp?.accessToken) {
+          localStorage.setItem(this.tokenKey, resp.accessToken);
+        }
+      })
+    );
+  }
+
+  register(request: RegisterRequest): Observable<void> {
+    return this.http.post<void>(`${this.apiBase}/api/auth/register`, request);
+  }
+}
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\auth\login\login.component.css 
+------------------------------------------ 
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\auth\login\login.component.html 
+------------------------------------------ 
+<div class="container py-4" style="max-width: 520px">
+  <h2 class="mb-3">登入</h2>
+
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label class="form-label">帳號</label>
+      <input
+        class="form-control"
+        name="username"
+        [(ngModel)]="username"
+        required
+        [disabled]="isLoading"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">密碼</label>
+      <input
+        class="form-control"
+        type="password"
+        name="password"
+        [(ngModel)]="password"
+        required
+        [disabled]="isLoading"
+      />
+    </div>
+
+    <button class="btn btn-primary w-100" type="submit" [disabled]="isLoading || loginForm.invalid">
+      <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+      登入
+    </button>
+
+    <div class="text-muted mt-3">
+      還沒有帳號？ <a routerLink="/register">註冊</a>
+    </div>
+  </form>
+</div>
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\auth\login\login.component.ts 
+------------------------------------------ 
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
+
+import { AuthService } from '../auth.service';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
+})
+export class LoginComponent {
+  username = '';
+  password = '';
+
+  isLoading = false;
+  errorMessage = '';
+
+  constructor(private readonly authService: AuthService, private readonly router: Router) {}
+
+  onSubmit(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.authService
+      .login({ username: this.username.trim(), password: this.password })
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: () => this.router.navigate(['/categories']),
+        error: (err) => {
+          console.error(err);
+          this.errorMessage = '登入失敗：帳號或密碼錯誤。';
+        }
+      });
+  }
+}
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\auth\register\register.component.css 
+------------------------------------------ 
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\auth\register\register.component.html 
+------------------------------------------ 
+<div class="container py-4" style="max-width: 520px">
+  <h2 class="mb-3">註冊</h2>
+
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success" role="alert">
+    {{ successMessage }}
+  </div>
+
+  <form #registerForm="ngForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label class="form-label">帳號</label>
+      <input
+        class="form-control"
+        name="username"
+        [(ngModel)]="username"
+        required
+        minlength="4"
+        maxlength="40"
+        [disabled]="isLoading"
+      />
+      <div class="form-text">4 到 40 個字元。</div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">密碼</label>
+      <input
+        class="form-control"
+        type="password"
+        name="password"
+        [(ngModel)]="password"
+        required
+        minlength="6"
+        maxlength="60"
+        [disabled]="isLoading"
+      />
+      <div class="form-text">6 到 60 個字元。</div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">確認密碼</label>
+      <input
+        class="form-control"
+        type="password"
+        name="confirmPassword"
+        [(ngModel)]="confirmPassword"
+        required
+        [disabled]="isLoading"
+      />
+    </div>
+
+    <button class="btn btn-primary w-100" type="submit" [disabled]="isLoading || registerForm.invalid">
+      <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+      註冊
+    </button>
+
+    <div class="text-muted mt-3">
+      已有帳號？ <a routerLink="/login">回登入</a>
+    </div>
+  </form>
+</div>
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\auth\register\register.component.ts 
+------------------------------------------ 
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
+
+import { AuthService } from '../auth.service';
+
+@Component({
+  selector: 'app-register',
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.css']
+})
+export class RegisterComponent {
+  username = '';
+  password = '';
+  confirmPassword = '';
+
+  isLoading = false;
+  errorMessage = '';
+  successMessage = '';
+
+  constructor(private readonly authService: AuthService, private readonly router: Router) {}
+
+  onSubmit(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    this.authService
+      .register({
+        username: this.username.trim(),
+        password: this.password,
+        confirmPassword: this.confirmPassword
+      })
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: () => {
+          this.successMessage = '註冊成功，請登入。';
+          setTimeout(() => this.router.navigate(['/login']), 600);
+        },
+        error: (err) => {
+          console.error(err);
+          const status = err?.status as number | undefined;
+          if (status === 409) {
+            this.errorMessage = '註冊失敗：帳號已存在。';
+            return;
+          }
+          if (status === 400) {
+            this.errorMessage = '註冊失敗：請確認密碼與確認密碼一致，且格式符合要求。';
+            return;
+          }
+          this.errorMessage = '註冊失敗，請稍後再試。';
+        }
+      });
+  }
+}
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\category\category.component.css 
+------------------------------------------ 
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\category\category.component.html 
+------------------------------------------ 
+<div class="container py-4">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h2 class="mb-0">類別管理</h2>
+    <div *ngIf="isLoading" class="d-flex align-items-center gap-2">
+      <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+      <span class="text-muted">處理中...</span>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="isLoggedIn" class="card mb-4">
+    <div class="card-header">新增類別</div>
+    <div class="card-body">
+      <form #categoryForm="ngForm" (ngSubmit)="onAddCategory()">
+        <div class="row g-3">
+          <div class="col-md-8">
+            <label class="form-label">名稱</label>
+            <input
+              class="form-control"
+              name="newCategoryName"
+              [(ngModel)]="newCategory.categoryName"
+              required
+              [disabled]="isLoading"
+            />
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-primary w-100" type="submit" [disabled]="isLoading || categoryForm.invalid">
+              新增
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">類別列表</div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 80px">ID</th>
+              <th>名稱</th>
+              <th *ngIf="isLoggedIn" style="width: 240px">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of categories; let i = index">
+              <td>{{ c.id }}</td>
+              <td>
+                <ng-container *ngIf="c.isEditing; else viewName">
+                  <input
+                    class="form-control form-control-sm"
+                    [name]="'name-' + (c.id ?? 'tmp')"
+                    [(ngModel)]="c.categoryName"
+                    [disabled]="isLoading"
+                  />
+                </ng-container>
+                <ng-template #viewName>{{ c.categoryName }}</ng-template>
+              </td>
+              <td *ngIf="isLoggedIn">
+                <div class="btn-group" role="group" aria-label="Category actions">
+                  <button
+                    *ngIf="!c.isEditing"
+                    class="btn btn-outline-secondary btn-sm"
+                    type="button"
+                    (click)="onToggleModify(c)"
+                    [disabled]="isLoading"
+                  >
+                    編輯
+                  </button>
+
+                  <button
+                    *ngIf="c.isEditing"
+                    class="btn btn-success btn-sm"
+                    type="button"
+                    (click)="onUpdateCategory(c)"
+                    [disabled]="isLoading"
+                  >
+                    儲存
+                  </button>
+
+                  <button
+                    *ngIf="c.isEditing"
+                    class="btn btn-outline-secondary btn-sm"
+                    type="button"
+                    (click)="onCancelModify(c)"
+                    [disabled]="isLoading"
+                  >
+                    取消
+                  </button>
+
+                  <button
+                    class="btn btn-outline-danger btn-sm"
+                    type="button"
+                    (click)="onDeleteCategory(c.id)"
+                    [disabled]="isLoading"
+                  >
+                    刪除
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="!isLoading && categories.length === 0">
+              <td [attr.colspan]="isLoggedIn ? 3 : 2" class="text-center text-muted py-4">目前沒有資料</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\category\category.component.ts 
+------------------------------------------ 
+import { Component, OnInit } from '@angular/core';
+import { finalize } from 'rxjs';
+
+import { AuthService } from '../auth/auth.service';
+import { Category } from '../models/category';
+import { CategoryService } from '../services/category.service';
+
+@Component({
+  selector: 'app-category',
+  templateUrl: './category.component.html',
+  styleUrls: ['./category.component.css']
+})
+export class CategoryComponent implements OnInit {
+  categories: Category[] = [];
+
+  newCategory: Category = {
+    categoryName: ''
+  };
+
+  isLoading = false;
+  errorMessage = '';
+
+  private readonly originalSnapshot = new WeakMap<Category, Pick<Category, 'categoryName'>>();
+
+  constructor(
+    private readonly categoryService: CategoryService,
+    private readonly authService: AuthService
+  ) {}
+
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
+  ngOnInit(): void {
+    this.reloadData();
+  }
+
+  reloadData(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.categoryService
+      .getAll()
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: (data) => {
+          console.log('categories:', data);
+          this.categories = (data ?? []).map((c) => ({
+            ...c,
+            isEditing: false
+          }));
+        },
+        error: (error) => {
+          console.error(error);
+          this.errorMessage = '載入類別資料失敗，請稍後再試。';
+          this.categories = [];
+        }
+      });
+  }
+
+  private validateCategory(category: Category, currentId?: number): string | null {
+    const name = (category.categoryName ?? '').trim();
+    if (!name) return '類別名稱為必填。';
+
+    const duplicate = this.categories.some(
+      (c) => c.categoryName.trim() === name && c.id !== currentId
+    );
+    if (duplicate) return `類別名稱「${name}」已存在，請使用其他名稱。`;
+
+    return null;
+  }
+
+  onAddCategory(): void {
+    this.errorMessage = '';
+
+    const payload: Category = {
+      categoryName: (this.newCategory.categoryName ?? '').trim()
+    };
+
+    const validationError = this.validateCategory(payload);
+    if (validationError) {
+      this.errorMessage = validationError;
+      return;
+    }
+
+    this.isLoading = true;
+
+    this.categoryService
+      .save(payload)
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: () => {
+          this.newCategory = { categoryName: '' };
+          this.reloadData();
+        },
+        error: (error) => {
+          console.error(error);
+          this.errorMessage = error?.error?.message ?? '新增類別失敗，請稍後再試。';
+        }
+      });
+  }
+
+  onDeleteCategory(id: number | undefined): void {
+    if (id === undefined) {
+      this.errorMessage = '刪除失敗：找不到對應的類別 ID。';
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.categoryService
+      .deleteById(id)
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: () => this.reloadData(),
+        error: (error) => {
+          console.error(error);
+          this.errorMessage = error?.error?.message ?? '刪除類別失敗，請稍後再試。';
+        }
+      });
+  }
+
+  onToggleModify(category: Category): void {
+    if (!category.isEditing) {
+      this.originalSnapshot.set(category, {
+        categoryName: category.categoryName
+      });
+    }
+
+    category.isEditing = true;
+    this.errorMessage = '';
+  }
+
+  onCancelModify(category: Category): void {
+    const snapshot = this.originalSnapshot.get(category);
+    if (snapshot) {
+      category.categoryName = snapshot.categoryName;
+    }
+
+    category.isEditing = false;
+    this.errorMessage = '';
+  }
+
+  onUpdateCategory(category: Category): void {
+    if (category.id === undefined) {
+      this.errorMessage = '更新失敗：找不到對應的類別 ID。';
+      return;
+    }
+
+    this.errorMessage = '';
+
+    const payload: Category = {
+      id: category.id,
+      categoryName: (category.categoryName ?? '').trim()
+    };
+
+    const validationError = this.validateCategory(payload, category.id);
+    if (validationError) {
+      this.errorMessage = validationError;
+      return;
+    }
+
+    this.isLoading = true;
+
+    this.categoryService
+      .save(payload)
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: () => {
+          category.isEditing = false;
+          this.originalSnapshot.delete(category);
+          this.reloadData();
+        },
+        error: (error) => {
+          console.error(error);
+          this.errorMessage = error?.error?.message ?? '更新類別失敗，請稍後再試。';
+        }
+      });
+  }
+}
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\course\course.component.css 
+------------------------------------------ 
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\course\course.component.html 
+------------------------------------------ 
+<div class="container py-4">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h2 class="mb-0">課程管理</h2>
+    <div *ngIf="isLoading" class="d-flex align-items-center gap-2">
+      <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+      <span class="text-muted">處理中...</span>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="isLoggedIn" class="card mb-4">
+    <div class="card-header">新增課程</div>
+    <div class="card-body">
+      <form #courseForm="ngForm" (ngSubmit)="onAddCourse()">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">名稱</label>
+            <input
+              class="form-control"
+              name="newCourseName"
+              [(ngModel)]="newCourse.courseName"
+              required
+              [disabled]="isLoading"
+            />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">描述</label>
+            <input
+              class="form-control"
+              name="newCourseDescription"
+              [(ngModel)]="newCourse.courseSummary"
+              [disabled]="isLoading"
+            />
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">價格</label>
+            <input
+              class="form-control"
+              type="number"
+              name="newCoursePrice"
+              [(ngModel)]="newCourse.price"
+              [disabled]="isLoading"
+            />
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">類別</label>
+            <select
+              class="form-select"
+              name="newCourseCategoryId"
+              [(ngModel)]="newCourse.categoryId"
+              [disabled]="isLoading"
+            >
+              <option [ngValue]="undefined">— 不設類別 —</option>
+              <option *ngFor="let cat of categories" [ngValue]="cat.id">{{ cat.categoryName }}</option>
+            </select>
+          </div>
+
+          <div class="col-12">
+            <button class="btn btn-primary" type="submit" [disabled]="isLoading || courseForm.invalid">新增</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">課程列表</div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 80px">ID</th>
+              <th>名稱</th>
+              <th>描述</th>
+              <th style="width: 120px">價格</th>
+              <th style="width: 160px">類別</th>
+              <th *ngIf="isLoggedIn" style="width: 240px">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of courses; let i = index">
+              <td>{{ c.id }}</td>
+              <td>
+                <ng-container *ngIf="c.isEditing; else viewName">
+                  <input
+                    class="form-control form-control-sm"
+                    [name]="'name-' + (c.id ?? 'tmp')"
+                    [(ngModel)]="c.courseName"
+                    [disabled]="isLoading"
+                  />
+                </ng-container>
+                <ng-template #viewName>{{ c.courseName }}</ng-template>
+              </td>
+              <td>
+                <ng-container *ngIf="c.isEditing; else viewDesc">
+                  <input
+                    class="form-control form-control-sm"
+                    [name]="'desc-' + (c.id ?? 'tmp')"
+                    [(ngModel)]="c.courseSummary"
+                    [disabled]="isLoading"
+                  />
+                </ng-container>
+                <ng-template #viewDesc>{{ c.courseSummary }}</ng-template>
+              </td>
+              <td>
+                <ng-container *ngIf="c.isEditing; else viewPrice">
+                  <input
+                    class="form-control form-control-sm"
+                    type="number"
+                    [name]="'price-' + (c.id ?? 'tmp')"
+                    [(ngModel)]="c.price"
+                    [disabled]="isLoading"
+                  />
+                </ng-container>
+                <ng-template #viewPrice>{{ c.price }}</ng-template>
+              </td>
+              <td>
+                <ng-container *ngIf="c.isEditing; else viewCategory">
+                  <select
+                    class="form-select form-select-sm"
+                    [name]="'categoryId-' + (c.id ?? 'tmp')"
+                    [(ngModel)]="c.categoryId"
+                    [disabled]="isLoading"
+                  >
+                    <option [ngValue]="undefined">— 不設類別 —</option>
+                    <option *ngFor="let cat of categories" [ngValue]="cat.id">{{ cat.categoryName }}</option>
+                  </select>
+                </ng-container>
+                <ng-template #viewCategory>{{ getCategoryName(c.categoryId) }}</ng-template>
+              </td>
+              <td *ngIf="isLoggedIn">
+                <div class="btn-group" role="group" aria-label="Course actions">
+                  <button
+                    *ngIf="!c.isEditing"
+                    class="btn btn-outline-secondary btn-sm"
+                    type="button"
+                    (click)="onToggleModify(c)"
+                    [disabled]="isLoading"
+                  >
+                    編輯
+                  </button>
+
+                  <button
+                    *ngIf="c.isEditing"
+                    class="btn btn-success btn-sm"
+                    type="button"
+                    (click)="onUpdateCourse(c)"
+                    [disabled]="isLoading"
+                  >
+                    儲存
+                  </button>
+
+                  <button
+                    *ngIf="c.isEditing"
+                    class="btn btn-outline-secondary btn-sm"
+                    type="button"
+                    (click)="onCancelModify(c)"
+                    [disabled]="isLoading"
+                  >
+                    取消
+                  </button>
+
+                  <button
+                    class="btn btn-outline-danger btn-sm"
+                    type="button"
+                    (click)="onDeleteCourse(c.id)"
+                    [disabled]="isLoading"
+                  >
+                    刪除
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="!isLoading && courses.length === 0">
+              <td [attr.colspan]="isLoggedIn ? 6 : 5" class="text-center text-muted py-4">目前沒有資料</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\course\course.component.ts 
+------------------------------------------ 
+import { Component, OnInit } from '@angular/core';
+import { finalize } from 'rxjs';
+
+import { AuthService } from '../auth/auth.service';
+import { Category } from '../models/category';
+import { Course } from '../models/course';
+import { CategoryService } from '../services/category.service';
+import { CourseService } from '../services/course.service';
+
+@Component({
+  selector: 'app-course',
+  templateUrl: './course.component.html',
+  styleUrls: ['./course.component.css']
+})
+export class CourseComponent implements OnInit {
+  courses: Course[] = [];
+  categories: Category[] = [];
+
+  newCourse: Course = {
+    courseName: '',
+    courseSummary: '',
+    price: undefined,
+    categoryId: undefined
+  };
+
+  isLoading = false;
+  errorMessage = '';
+
+  private readonly originalSnapshot = new WeakMap<Course, Pick<Course, 'courseName' | 'courseSummary' | 'price' | 'categoryId'>>();
+
+  constructor(
+    private readonly courseService: CourseService,
+    private readonly categoryService: CategoryService,
+    private readonly authService: AuthService
+  ) {}
+
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
+  ngOnInit(): void {
+    this.categoryService.getAll().subscribe({
+      next: (data) => (this.categories = data ?? []),
+      error: () => (this.categories = [])
+    });
+    this.reloadData();
+  }
+
+  getCategoryName(id: number | undefined): string {
+    if (id === undefined || id === null) return '—';
+    const cat = this.categories.find((c) => c.id === id);
+    return cat ? cat.categoryName : String(id);
+  }
+
+  private validateCourse(course: Course, currentId?: number): string | null {
+    const name = (course.courseName ?? '').trim();
+    if (!name) return '課程名稱為必填。';
+
+    const price = course.price ?? 0;
+    if (price <= 0) return '價格必須為正數（大於 0）。';
+
+    const duplicate = this.courses.some(
+      (c) => c.courseName.trim() === name && c.id !== currentId
+    );
+    if (duplicate) return `課程名稱「${name}」已存在，請使用其他名稱。`;
+
+    return null;
+  }
+
+  reloadData(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.courseService
+      .getAll()
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: (data) => {
+          console.log('courses:', data);
+          this.courses = (data ?? []).map((c) => ({
+            ...c,
+            isEditing: false
+          }));
+        },
+        error: (error) => {
+          console.error(error);
+          this.errorMessage = '載入課程資料失敗，請稍後再試。';
+          this.courses = [];
+        }
+      });
+  }
+
+  onAddCourse(): void {
+    this.errorMessage = '';
+
+    const payload: Course = {
+      courseName: (this.newCourse.courseName ?? '').trim(),
+      courseSummary: (this.newCourse.courseSummary ?? '').trim(),
+      price: this.newCourse.price ?? 0,
+      categoryId: this.newCourse.categoryId
+    };
+
+    const validationError = this.validateCourse(payload);
+    if (validationError) {
+      this.errorMessage = validationError;
+      return;
+    }
+
+    this.isLoading = true;
+
+    this.courseService
+      .save(payload)
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: () => {
+          this.newCourse = { courseName: '', courseSummary: '', price: undefined, categoryId: undefined };
+          this.reloadData();
+        },
+        error: (error) => {
+          console.error(error);
+          this.errorMessage = error?.error?.message ?? '新增課程失敗，請稍後再試。';
+        }
+      });
+  }
+
+  onDeleteCourse(id: number | undefined): void {
+    if (id === undefined) {
+      this.errorMessage = '刪除失敗：id 不可為空。';
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.courseService
+      .deleteById(id)
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: () => this.reloadData(),
+        error: (error) => {
+          console.error(error);
+          this.errorMessage = error?.error?.message ?? '刪除課程失敗，請稍後再試。';
+        }
+      });
+  }
+
+  onToggleModify(course: Course): void {
+    if (!course.isEditing) {
+      this.originalSnapshot.set(course, {
+        courseName: course.courseName,
+        courseSummary: course.courseSummary,
+        price: course.price,
+        categoryId: course.categoryId
+      });
+    }
+
+    course.isEditing = true;
+    this.errorMessage = '';
+  }
+
+  onCancelModify(course: Course): void {
+    const snapshot = this.originalSnapshot.get(course);
+    if (snapshot) {
+      course.courseName = snapshot.courseName;
+      course.courseSummary = snapshot.courseSummary;
+      course.price = snapshot.price;
+      course.categoryId = snapshot.categoryId;
+    }
+
+    course.isEditing = false;
+    this.errorMessage = '';
+  }
+
+  onUpdateCourse(course: Course): void {
+    if (course.id === undefined) {
+      this.errorMessage = '更新失敗：找不到對應的課程 ID。';
+      return;
+    }
+
+    this.errorMessage = '';
+
+    const payload: Course = {
+      id: course.id,
+      courseName: (course.courseName ?? '').trim(),
+      courseSummary: (course.courseSummary ?? '').trim(),
+      price: course.price ?? 0,
+      categoryId: course.categoryId
+    };
+
+    const validationError = this.validateCourse(payload, course.id);
+    if (validationError) {
+      this.errorMessage = validationError;
+      return;
+    }
+
+    this.isLoading = true;
+
+    this.courseService
+      .save(payload)
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: () => {
+          course.isEditing = false;
+          this.originalSnapshot.delete(course);
+          this.reloadData();
+        },
+        error: (error) => {
+          console.error(error);
+          this.errorMessage = error?.error?.message ?? '更新課程失敗，請稍後再試。';
+        }
+      });
+  }
+}
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\models\category.ts 
+------------------------------------------ 
+export interface Category {
+  id?: number;
+  categoryName: string;
+  isEditing?: boolean;
+}
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\models\course.ts 
+------------------------------------------ 
+import { Category } from './category';
+
+export interface Course {
+  id?: number;
+  courseName: string;
+  courseSummary?: string;
+  courseDescription?: string;
+  price?: number;
+  category?: Category;
+
+  // UI helper field (backend accepts category object, and also provides a dedicated endpoint to save with categoryId)
+  categoryId?: number;
+  isEditing?: boolean;
+}
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\services\category.service.ts 
+------------------------------------------ 
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+import { Category } from '../models/category';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CategoryService {
+  private readonly apiBase = '';
+
+  constructor(private readonly http: HttpClient) {}
+
+  getAll(): Observable<Category[]> {
+    return this.http.get<Category[]>(`${this.apiBase}/api/category/all`);
+  }
+
+  getById(id: number): Observable<Category> {
+    return this.http.get<Category>(`${this.apiBase}/api/category/${id}`);
+  }
+
+  save(category: Category): Observable<Category> {
+    return this.http.post<Category>(`${this.apiBase}/api/category`, category);
+  }
+
+  deleteById(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiBase}/api/category/${id}`);
+  }
+}
+ 
+------------------------------------------ 
+FILE: C:\Users\User\OneDrive\Desktop\CTBC BANK LAB\lab3\ctbc-course-system\src\app\services\course.service.ts 
+------------------------------------------ 
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+import { Course } from '../models/course';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CourseService {
+  private readonly apiBase = '';
+
+  constructor(private readonly http: HttpClient) {}
+
+  getAll(): Observable<Course[]> {
+    return this.http.get<Course[]>(`${this.apiBase}/api/course/all`).pipe(
+      map((courses) =>
+        (courses ?? []).map((c) => ({
+          ...c,
+          categoryId: c.category?.id
+        }))
+      )
+    );
+  }
+
+  getById(id: number): Observable<Course> {
+    return this.http.get<Course>(`${this.apiBase}/api/course/${id}`).pipe(
+      map((c) => ({
+        ...c,
+        categoryId: c.category?.id
+      }))
+    );
+  }
+
+  save(course: Course): Observable<Course> {
+    const payload = {
+      id: course.id,
+      courseName: course.courseName,
+      courseSummary: course.courseSummary,
+      courseDescription: course.courseDescription,
+      price: course.price
+    };
+
+    if (course.categoryId !== undefined && course.categoryId !== null) {
+      return this.http
+        .post<Course>(`${this.apiBase}/api/course/category/${course.categoryId}`, payload)
+        .pipe(map((c) => ({ ...c, categoryId: c.category?.id })));
+    }
+
+    return this.http
+      .post<Course>(`${this.apiBase}/api/course`, payload)
+      .pipe(map((c) => ({ ...c, categoryId: c.category?.id })));
+  }
+
+  deleteById(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiBase}/api/course/${id}`);
+  }
+}
+ 

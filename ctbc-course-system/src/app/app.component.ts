@@ -9,9 +9,13 @@ import { AuthService } from './auth/auth.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+
   title = 'ctbc-course-system';
 
-  constructor(public readonly authService: AuthService, private readonly router: Router) {}
+  constructor(
+    public readonly authService: AuthService,
+    private readonly router: Router
+  ) {}
 
   onLogout(): void {
     this.authService.logout();

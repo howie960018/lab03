@@ -6,7 +6,6 @@ import com.ctbc.assignment2.controller.rest.dto.RegisterRequest;
 import com.ctbc.assignment2.security.JwtService;
 import com.ctbc.assignment2.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
+
+
+// AuthRestController 是「櫃檯人員」
 @RestController
 @RequestMapping("/api/auth")
 public class AuthRestController {
@@ -32,10 +34,11 @@ public class AuthRestController {
     private final AppUserService appUserService;
 
     @Autowired
-    public AuthRestController(AuthenticationManager authenticationManager,
-                              UserDetailsService userDetailsService,
-                              JwtService jwtService,
-                              AppUserService appUserService) {
+    public AuthRestController(
+            AuthenticationManager authenticationManager,
+            UserDetailsService userDetailsService,
+            JwtService jwtService,
+            AppUserService appUserService) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtService = jwtService;
@@ -44,31 +47,50 @@ public class AuthRestController {
 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
+        // 櫃檯不自己驗證，交給「身分查驗系統」AuthenticationManager
+        // UsernamePasswordAuthenticationToken 是寫著帳號密碼的「申請單」
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(
+                    request.getUsername(),
+                    request.getPassword()
+                )
             );
         } catch (AuthenticationException ex) {
             // 帳密錯誤時回傳 401
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
 
+        // 開始製作通行證
         UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
         String token = jwtService.generateToken(userDetails);
+
         return new AuthResponse(token, "Bearer", jwtService.getExpirationMs());
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest request) {
+    public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
+        // 1. 密碼與確認密碼檢查
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passwords do not match");
         }
+
+        // 2. 帳號是否已存在
         if (appUserService.existsByUsername(request.getUsername())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
         }
 
+        // 3. 建立使用者 (存 DB，密碼已加密)
         appUserService.registerUser(request.getUsername(), request.getPassword());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+
+        // 4. 載入 UserDetails (JWT 需要)
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+
+        // 5. 產生 JWT (與 login 完全一致)
+        String token = jwtService.generateToken(userDetails);
+
+        // 6. 直接回傳 JWT
+        return new AuthResponse(token, "Bearer", jwtService.getExpirationMs());
     }
 }

@@ -10,6 +10,8 @@ import { CourseComponent } from './course/course.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { AuthInterceptor } from './auth/auth.interceptor';
+import { CourseCatalogComponent } from './course-catalog/course-catalog.component';
+import { CategoryCatalogComponent } from './category-catalog/category-catalog.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +19,9 @@ import { AuthInterceptor } from './auth/auth.interceptor';
     CategoryComponent,
     CourseComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    CategoryCatalogComponent,
+    CourseCatalogComponent
   ],
   imports: [
     BrowserModule,
@@ -25,7 +29,9 @@ import { AuthInterceptor } from './auth/auth.interceptor';
     FormsModule,
     HttpClientModule
   ],
+  // 全站共用的服務櫃檯
   providers: [
+    // 網站有人要送 HTTP 請求時，先交給 AuthInterceptor 看要不要加 JWT
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

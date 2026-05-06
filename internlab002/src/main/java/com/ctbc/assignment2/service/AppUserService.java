@@ -15,7 +15,8 @@ public class AppUserService implements UserDetailsService {
     private final AppUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public AppUserService(AppUserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AppUserService(AppUserRepository userRepository,
+                          PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -40,24 +41,31 @@ public class AppUserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    public AppUser findByUsername(String username) throws UsernameNotFoundException {
+    public AppUser findByUsername(String username)
+            throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found: " + username));
     }
 
-    public boolean changePassword(String username, String currentRaw, String newRaw) {
+    public boolean changePassword(String username, String currentRaw,
+                                  String newRaw) {
         AppUser user = findByUsername(username);
+
         if (!passwordEncoder.matches(currentRaw, user.getPassword())) {
             return false;
         }
+
         user.setPassword(passwordEncoder.encode(newRaw));
         userRepository.save(user);
         return true;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException {
         AppUser user = findByUsername(username);
+
         return User.withUsername(user.getUsername())
                 .password(user.getPassword())
                 .roles(user.getRole())

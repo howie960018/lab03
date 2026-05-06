@@ -1,0 +1,202 @@
+列出資料夾 PATH
+磁碟區序號為 7841-3D98
+C:.
+|   project_structure.txt
+|   
++---main
+|   +---java
+|   |   \---com
+|   |       \---ctbc
+|   |           \---assignment2
+|   |               |   Assignment2Application.java
+|   |               |   
+|   |               +---bean
+|   |               |       AppUser.java
+|   |               |       CartItem.java
+|   |               |       Chapter.java
+|   |               |       CourseBean.java
+|   |               |       CourseCategoryBean.java
+|   |               |       CourseReview.java
+|   |               |       CourseStatus.java
+|   |               |       Enrollment.java
+|   |               |       Order.java
+|   |               |       OrderItem.java
+|   |               |       OrderStatus.java
+|   |               |       
+|   |               +---config
+|   |               |       AppUserSeeder.java
+|   |               |       WebMvcConfig.java
+|   |               |       
+|   |               +---controller
+|   |               |   +---rest
+|   |               |   |   |   AuthRestController.java
+|   |               |   |   |   CategoryBeanRestController.java
+|   |               |   |   |   CourseBeanRestController.java
+|   |               |   |   |   
+|   |               |   |   \---dto
+|   |               |   |           AuthRequest.java
+|   |               |   |           AuthResponse.java
+|   |               |   |           RegisterRequest.java
+|   |               |   |           
+|   |               |   \---web
+|   |               |           AdminDashboardController.java
+|   |               |           AdminReviewController.java
+|   |               |           CartWebController.java
+|   |               |           CategoryWebController.java
+|   |               |           ChapterWebController.java
+|   |               |           CourseWebController.java
+|   |               |           HomeWebController.java
+|   |               |           InstructorDashboardController.java
+|   |               |           LoginWebController.java
+|   |               |           MyCourseWebController.java
+|   |               |           OrderWebController.java
+|   |               |           ProfileWebController.java
+|   |               |           PublicCourseWebController.java
+|   |               |           RegistrationWebController.java
+|   |               |           
+|   |               +---exception
+|   |               |       CategoryHierarchyException.java
+|   |               |       CategoryNotEmptyException.java
+|   |               |       DuplicateCourseNameException.java
+|   |               |       DuplicateEnrollmentException.java
+|   |               |       ErrorResponse.java
+|   |               |       GlobalExceptionHandler.java
+|   |               |       InvalidFileException.java
+|   |               |       ResourceNotFoundException.java
+|   |               |       WebExceptionHandler.java
+|   |               |       
+|   |               +---repository
+|   |               |       AppUserRepository.java
+|   |               |       ChapterRepository.java
+|   |               |       CourseBeanRepository.java
+|   |               |       CourseCategoryBeanRepository.java
+|   |               |       CourseReviewRepository.java
+|   |               |       CourseSpec.java
+|   |               |       EnrollmentRepository.java
+|   |               |       OrderItemRepository.java
+|   |               |       OrderRepository.java
+|   |               |       
+|   |               +---runner
+|   |               |       SampleDataRunnable.java
+|   |               |       SampleDataRunner2.java
+|   |               |       SampleDataRunner5.java
+|   |               |       
+|   |               +---security
+|   |               |       JwtAuthenticationFilter.java
+|   |               |       JwtService.java
+|   |               |       SecurityConfig.java
+|   |               |       
+|   |               \---service
+|   |                   |   AppUserService.java
+|   |                   |   CartService.java
+|   |                   |   ChapterService.java
+|   |                   |   CourseBeanService.java
+|   |                   |   CourseCategoryBeanService.java
+|   |                   |   CourseReviewService.java
+|   |                   |   EnrollmentService.java
+|   |                   |   FileStorageService.java
+|   |                   |   OrderService.java
+|   |                   |   
+|   |                   \---impl
+|   |                           CartServiceImpl.java
+|   |                           ChapterServiceImpl.java
+|   |                           CourseBeanServiceJPAImplement.java
+|   |                           CourseCategoryBeanServiceJPAImplement.java
+|   |                           CourseReviewServiceImpl.java
+|   |                           EnrollmentServiceImpl.java
+|   |                           FileStorageServiceImpl.java
+|   |                           OrderServiceImpl.java
+|   |                           
+|   \---resources
+|       |   application.properties
+|       |   
+|       \---templates
+|           |   error.html
+|           |   home.html
+|           |   layout.html
+|           |   login.html
+|           |   register.html
+|           |   
+|           +---admin
+|           |   |   dashboard.html
+|           |   |   
+|           |   +---category
+|           |   |       form.html
+|           |   |       list.html
+|           |   |       
+|           |   +---chapter
+|           |   |       form.html
+|           |   |       list.html
+|           |   |       
+|           |   +---course
+|           |   |       form.html
+|           |   |       list.html
+|           |   |       
+|           |   \---review
+|           |           list.html
+|           |           
+|           +---cart
+|           |       index.html
+|           |       
+|           +---courses
+|           |       detail.html
+|           |       index.html
+|           |       
+|           +---instructor
+|           |   |   dashboard.html
+|           |   |   
+|           |   \---course
+|           |           form.html
+|           |           list.html
+|           |           
+|           +---my-courses
+|           |       index.html
+|           |       
+|           +---orders
+|           |       detail.html
+|           |       index.html
+|           |       
+|           \---profile
+|                   index.html
+|                   
+\---test
+    \---java
+        \---com
+            \---ctbc
+                \---assignment2
+                        AdminDashboardControllerTest.java
+                        AdminReviewControllerTest.java
+                        Assignment2ApplicationTests.java
+                        CartServiceImplTest.java
+                        CartWebControllerTest.java
+                        CategoryBeanRestControllerTest.java
+                        CategoryWebControllerTest.java
+                        ChapterServiceImplTest.java
+                        ChapterWebControllerTest.java
+                        CourseBeanRestControllerTest.java
+                        CourseBeanServiceImplTest.java
+                        CourseBeanServiceSearchTest.java
+                        CourseBeanTest.java
+                        CourseCategoryBeanServiceImplTest.java
+                        CourseCategoryBeanTest.java
+                        CourseReviewServiceImplTest.java
+                        CourseWebControllerTest.java
+                        DeleteStrategyTest.java
+                        EnrollmentRepositoryTest.java
+                        EnrollmentServiceImplTest.java
+                        FileStorageServiceImplTest.java
+                        GlobalExceptionHandlerTest.java
+                        InstructorDashboardControllerTest.java
+                        LoginWebControllerTest.java
+                        MyCourseWebControllerTest.java
+                        OrderServiceImplTest.java
+                        OrderWebControllerTest.java
+                        ProfileWebControllerTest.java
+                        PublicCourseWebControllerTest.java
+                        RegistrationWebControllerTest.java
+                        SecurityApiTest.java
+                        SecurityWebTest.java
+                        ServiceTest.java
+                        TestSecurityBeans.java
+                        WebExceptionHandlerTest.java
+                        

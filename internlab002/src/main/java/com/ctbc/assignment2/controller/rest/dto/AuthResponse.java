@@ -1,7 +1,7 @@
 package com.ctbc.assignment2.controller.rest.dto;
 
-public class AuthResponse {
 
+public class AuthResponse {
     private final String accessToken;
     private final String tokenType;
     private final long expiresInMs;

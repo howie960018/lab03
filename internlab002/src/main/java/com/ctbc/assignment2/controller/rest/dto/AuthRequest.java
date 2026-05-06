@@ -1,7 +1,7 @@
 package com.ctbc.assignment2.controller.rest.dto;
 
-public class AuthRequest {
 
+public class AuthRequest {
     private String username;
     private String password;
 

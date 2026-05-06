@@ -7,8 +7,7 @@ export interface Course {
   courseDescription?: string;
   price?: number;
   category?: Category;
-
-  // UI helper field (backend accepts category object, and also provides a dedicated endpoint to save with categoryId)
   categoryId?: number;
+  imageUrl?: string; // ✅ 新增
   isEditing?: boolean;
 }
