@@ -21,7 +21,6 @@
     </properties>
 
     <dependencies>
-        <!-- 1. ?°å? Lombok ä¾è³´ -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -104,7 +103,6 @@
 
     <build>
         <plugins>
-            <!-- ç¢ºä? Maven ç·¨è­¯?‚æ??·è? Lombok annotation processing -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -141,7 +139,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <!-- 2. è¨­å?ç·¨è­¯?’ä»¶ä»¥æ???Lombok (?ªå??“å?å¤§å?) -->
                 <configuration>
                     <excludes>
                         <exclude>
