@@ -1,84 +1,35 @@
+
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-
   <div class="container">
+    <a class="navbar-brand" routerLink="/categories">CTBC 線上學習</a>
 
-    <a class="navbar-brand" routerLink="/categories">
-      CTBC Course System
-    </a>
+    <div class="navbar-nav">
+      <a class="nav-link" routerLink="/categories" routerLinkActive="active">類別瀏覽</a>
 
-    <div class="navbar-nav me-auto">
+      <a class="nav-link" routerLink="/courses">課程瀏覽</a>
 
-      <a
-        class="nav-link"
-        routerLink="/categories"
-        routerLinkActive="active">
-        類別瀏覽
+      <a *ngIf="authService.isUser()" class="nav-link" routerLink="/favorites">
+        我的收藏
       </a>
 
-      <a
-        *ngIf="authService.isLoggedIn()"
-        class="nav-link"
-        routerLink="/admin/categories">
+      <a *ngIf="authService.isAdmin()" class="nav-link" routerLink="/admin/categories">
         類別管理
       </a>
 
-      <a
-        class="nav-link"
-        routerLink="/courses">
-        課程瀏覽
-      </a>
-
-      <a
-        *ngIf="authService.isLoggedIn()"
-        class="nav-link"
-        routerLink="/admin/courses">
+      <a *ngIf="authService.isAdmin() || authService.isInstructor()" class="nav-link" routerLink="/admin/courses">
         課程管理
       </a>
 
-    </div>
-
-    <div class="navbar-nav ms-auto align-items-lg-center">
-
-      <ng-container
-        *ngIf="authService.isLoggedIn(); else loggedOutNav">
-
-        <button
-          class="btn btn-sm btn-outline-light ms-lg-3"
-          type="button"
-          (click)="onLogout()">
-
-          登出
-
-        </button>
-
+      <ng-container *ngIf="authService.isLoggedIn(); else loggedOutNav">
+        <button class="btn btn-sm btn-outline-light ms-3" type="button" (click)="onLogout()">登出</button>
       </ng-container>
 
       <ng-template #loggedOutNav>
-
-        <a
-          class="nav-link"
-          routerLink="/login"
-          routerLinkActive="active">
-
-          登入
-
-        </a>
-
-        <a
-          class="nav-link"
-          routerLink="/register"
-          routerLinkActive="active">
-
-          註冊
-
-        </a>
-
+        <a class="nav-link ms-2" routerLink="/login" routerLinkActive="active">登入</a>
+        <a class="nav-link" routerLink="/register" routerLinkActive="active">註冊</a>
       </ng-template>
-
     </div>
-
   </div>
-
 </nav>
-
 <router-outlet></router-outlet>

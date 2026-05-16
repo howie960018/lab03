@@ -1,28 +1,20 @@
+
+
 <div class="container py-4">
 
-  <!-- 標題 -->
   <h2 class="mb-4">探索課程</h2>
 
-  <!-- 🔍 搜尋 / 篩選 / 排序 -->
   <div class="row g-3 mb-4 align-items-end">
 
     <div class="col-md-4">
       <label class="form-label">關鍵字</label>
-      <input
-        class="form-control"
-        placeholder="搜尋課程名稱或描述"
-        [(ngModel)]="keyword"
-        (ngModelChange)="keyword$.next($event)"
-        (keyup.enter)="onSearch()">
+      <input class="form-control" placeholder="搜尋課程名稱或描述" [(ngModel)]="keyword" (ngModelChange)="keyword$.next($event)" (keyup.enter)="onSearch()">
     </div>
 
     <div class="col-md-3">
       <label class="form-label">類別</label>
-      <select
-        class="form-select"
-        [(ngModel)]="selectedCategoryId"
-        (change)="onCategoryChange()">
-        <option [ngValue]="undefined">— 所有類別 —</option>
+      <select class="form-select" [(ngModel)]="selectedCategoryId" (change)="onCategoryChange()">
+        <option [ngValue]="undefined">-- 所有類別 --</option>
         <option *ngFor="let c of categories" [ngValue]="c.id">
           {{ c.categoryName }}
         </option>
@@ -31,120 +23,86 @@
 
     <div class="col-md-3">
       <label class="form-label">排序</label>
-      <select
-        class="form-select"
-        [(ngModel)]="sort"
-        (change)="onSortChange(sort)">
+      <select class="form-select" [(ngModel)]="sort" (change)="onSortChange(sort)">
         <option value="id,asc">ID ↑</option>
         <option value="id,desc">ID ↓</option>
         <option value="price,asc">價格 ↑</option>
         <option value="price,desc">價格 ↓</option>
-        <option value="courseName,asc">名稱 A–Z</option>
-        <option value="courseName,desc">名稱 Z–A</option>
+        <option value="courseName,asc">名稱 A-Z</option>
+        <option value="courseName,desc">名稱 Z-A</option>
       </select>
     </div>
 
     <div class="col-md-2">
-      <button
-        class="btn btn-outline-primary w-100"
-        (click)="onSearch()">
+      <button class="btn btn-outline-primary w-100" (click)="onSearch()">
         查詢
       </button>
     </div>
 
   </div>
 
-  <!-- 課程卡片 -->
   <div class="row g-4">
 
-    <div
-      class="col-md-4"
-      *ngFor="let c of courses">
-
+    <div class="col-md-4" *ngFor="let c of courses">
       <div class="card h-100 shadow-sm">
 
-        <img
-          [src]="c.imageUrl || 'https://picsum.photos/seed/course-' + c.id + '/600/300'"
-          class="card-img-top"
-          style="height: 180px; object-fit: cover;">
+        <img [src]="c.imageUrl || 'https://picsum.photos/seed/course-' + c.id + '/600/300'" class="card-img-top" style="height: 180px; object-fit: cover;">
 
         <div class="card-body d-flex flex-column">
+          <h5 class="card-title">{{ c.courseName }}</h5>
 
-          <h5 class="card-title">
-            {{ c.courseName }}
-          </h5>
+          <p class="text-muted small mb-1">
+            講師：
+            {{ c.instructor?.username }}
+          </p>
 
-          <p class="card-text text-muted">
+          <p class="text-muted small mb-1">
             {{ c.courseSummary || '尚無描述' }}
           </p>
 
           <div class="mt-auto">
-
             <div class="fw-bold mb-2">
               NT$ {{ c.price || 0 }}
             </div>
-
             <button class="btn btn-outline-primary w-100">
               查看詳情
             </button>
 
+            <button *ngIf="authService.isUser()" class="btn btn-outline-danger w-100 mt-2" (click)="addFavorite(c.id!)">
+              ❤️ 收藏
+            </button>
           </div>
-
         </div>
 
       </div>
-
     </div>
 
   </div>
 
-  <!-- 分頁（含最前 / 最末） -->
-
-  <!-- 分頁 -->
   <div class="d-flex align-items-center mt-4">
 
-    <!-- ⏮ 最前頁 / ◀ 上一頁（靠左） -->
     <div class="btn-group">
-
-      <button
-        class="btn btn-outline-secondary btn-sm"
-        (click)="goFirst()"
-        [disabled]="page === 0 || isLoading">
+      <button class="btn btn-outline-secondary btn-sm" (click)="goFirst()" [disabled]="page === 0 || isLoading">
         ⏮ 最前頁
       </button>
 
-      <button
-        class="btn btn-outline-secondary btn-sm"
-        (click)="goPrev()"
-        [disabled]="page === 0 || isLoading">
+      <button class="btn btn-outline-secondary btn-sm" (click)="goPrev()" [disabled]="page === 0 || isLoading">
         ◀ 上一頁
       </button>
-
     </div>
 
-    <!-- 📄 中間頁碼（置中） -->
     <div class="flex-fill text-center text-muted">
-      第 {{ page + 1 }} / {{ totalPages }} 頁
-      （共 {{ totalElements }} 筆）
+      第 {{ page + 1 }} / {{ totalPages }} 頁 (共 {{ totalElements }} 筆)
     </div>
 
-    <!-- ▶ 下一頁 / ⏭ 最末頁（靠右） -->
     <div class="btn-group">
-
-      <button
-        class="btn btn-outline-secondary btn-sm"
-        (click)="goNext()"
-        [disabled]="page + 1 >= totalPages || isLoading">
+      <button class="btn btn-outline-secondary btn-sm" (click)="goNext()" [disabled]="page + 1 >= totalPages || isLoading">
         下一頁 ▶
       </button>
 
-      <button
-        class="btn btn-outline-secondary btn-sm"
-        (click)="goLast()"
-        [disabled]="page + 1 >= totalPages || isLoading">
+      <button class="btn btn-outline-secondary btn-sm" (click)="goLast()" [disabled]="page + 1 >= totalPages || isLoading">
         最末頁 ⏭
       </button>
-
     </div>
 
   </div>

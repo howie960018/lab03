@@ -1,21 +1,13 @@
-import { Component, OnInit } from '@angular/core';
 
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { Category } from '../models/category';
 import { Course } from '../models/course';
-
 import { CategoryService } from '../services/category.service';
 import { CourseService } from '../services/course.service';
-
 import { ActivatedRoute, Router } from '@angular/router';
-
 import { BehaviorSubject, Subject } from 'rxjs';
-
-import {
-  debounceTime,
-  distinctUntilChanged,
-  switchMap
-} from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-course',
@@ -31,10 +23,12 @@ export class CourseComponent implements OnInit {
 
   keyword = '';
   sort = 'id,asc';
-  selectedCategoryId: number | undefined;
+  selectedCategoryId?: number;
+  selectedInstructor?: string;
 
   courses: Course[] = [];
   categories: Category[] = [];
+  instructors: string[] = [];
 
   newCourse: Course = {
     courseName: '',
@@ -48,44 +42,33 @@ export class CourseComponent implements OnInit {
   errorMessage = '';
 
   search$ = new Subject<string>();
+  private queryTrigger$ = new BehaviorSubject<void>(undefined);
 
-  private queryTrigger$ =
-    new BehaviorSubject<void>(undefined);
-
-  private readonly originalSnapshot =
-    new WeakMap<Course, Pick<
-      Course,
-      'courseName' |
-      'courseSummary' |
-      'price' |
-      'categoryId' |
-      'imageUrl'
-    >>();
+  private readonly originalSnapshot = new WeakMap<Course, Pick<Course, 'courseName' | 'courseSummary' | 'price' | 'categoryId' | 'imageUrl'>>();
 
   constructor(
     private readonly courseService: CourseService,
     private readonly categoryService: CategoryService,
-    private readonly authService: AuthService,
+    public readonly authService: AuthService,
     private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {}
 
-  get isLoggedIn(): boolean {
-    return this.authService.isLoggedIn();
-  }
-
+  // 初始化
   ngOnInit(): void {
-
     this.categoryService.getAll().subscribe({
       next: data => this.categories = data ?? [],
       error: () => this.categories = []
     });
 
+   // ... 接續 ngOnInit 的內容 ...
+    this.courseService.getInstructors().subscribe({
+      next: (list: string[]) => this.instructors = (list ?? []).sort(),
+      error: () => this.instructors = []
+    });
+
     this.search$
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged()
-      )
+      .pipe(debounceTime(300), distinctUntilChanged())
       .subscribe(keyword => {
         this.keyword = keyword;
         this.page = 0;
@@ -99,9 +82,17 @@ export class CourseComponent implements OnInit {
       this.sort = params.get('sort') ?? 'id,asc';
 
       const cat = params.get('categoryId');
+      this.selectedCategoryId = cat ? Number(cat) : undefined;
 
-      this.selectedCategoryId =
-        cat !== null ? Number(cat) : undefined;
+      this.selectedInstructor = params.get('instructor') ?? undefined;
+
+      const currentUser = this.getCurrentUsername();
+
+      if (this.authService.isInstructor()) {
+        this.selectedInstructor = currentUser ?? undefined;
+      } else {
+        this.selectedInstructor = params.get('instructor') ?? undefined;
+      }
 
       this.reloadData();
     });
@@ -110,28 +101,23 @@ export class CourseComponent implements OnInit {
       .pipe(
         switchMap(() => {
           this.isLoading = true;
-
           return this.courseService.getPage(
             this.page,
             this.size,
             this.keyword,
             this.selectedCategoryId,
-            this.sort
+            this.sort,
+            this.selectedInstructor
           );
         })
       )
       .subscribe({
         next: res => {
-          this.courses = res.content.map(c => ({
-            ...c,
-            isEditing: false
-          }));
-
+          this.courses = res.content.map(c => ({ ...c, isEditing: false, categoryId: c.category?.id }));
           this.totalPages = res.totalPages;
           this.totalElements = res.totalElements;
           this.isLoading = false;
         },
-
         error: err => {
           console.error(err);
           this.errorMessage = '載入課程失敗';
@@ -145,6 +131,11 @@ export class CourseComponent implements OnInit {
   }
 
   private updateUrl(): void {
+    let instructor = this.selectedInstructor;
+    if (this.authService.isInstructor()) {
+      instructor = this.getCurrentUsername() ?? undefined;
+    }
+
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
@@ -152,6 +143,7 @@ export class CourseComponent implements OnInit {
         size: this.size,
         keyword: this.keyword || null,
         categoryId: this.selectedCategoryId ?? null,
+        instructor: instructor ?? null,
         sort: this.sort
       },
       queryParamsHandling: 'merge'
@@ -183,48 +175,38 @@ export class CourseComponent implements OnInit {
     }
   }
 
-  getCategoryName(id: number | undefined): string {
-    if (id === undefined || id === null) {
-      return '—';
-    }
-
+  getCategoryName(id?: number): string {
+    if (!id) return '—';
     const cat = this.categories.find(c => c.id === id);
-
     return cat ? cat.categoryName : String(id);
   }
 
-  private validateCourse(
-    course: Course,
-    currentId?: number
-  ): string | null {
+  getCurrentUsername(): string | null {
+    const token = this.authService.getToken();
+    if (!token) return null;
+    return JSON.parse(atob(token.split('.')[1])).sub;
+  }
 
+  isOwner(c: Course): boolean {
+    return c.instructor?.username === this.getCurrentUsername();
+  }
+
+  private validateCourse(course: Course, currentId?: number): string | null {
     const name = (course.courseName ?? '').trim();
-
-    if (!name) {
-      return '課程名稱為必填';
-    }
+    if (!name) return '課程名稱為必填';
 
     const price = course.price ?? 0;
-
-    if (price <= 0) {
-      return '價格必須為正數';
-    }
+    if (price <= 0) return '價格必須為正數';
 
     const duplicate = this.courses.some(
-      c =>
-        c.courseName.trim() === name &&
-        c.id !== currentId
+      c => c.courseName.trim() === name && c.id !== currentId
     );
-
-    if (duplicate) {
-      return `課程名稱「${name}」已存在`;
-    }
+    if (duplicate) return `課程名稱「${name}」已存在`;
 
     return null;
   }
 
   onAddCourse(): void {
-
     const payload: Course = {
       courseName: this.newCourse.courseName.trim(),
       courseSummary: this.newCourse.courseSummary?.trim(),
@@ -234,116 +216,67 @@ export class CourseComponent implements OnInit {
     };
 
     const error = this.validateCourse(payload);
-
     if (error) {
       this.errorMessage = error;
       return;
     }
 
-    this.courseService.save(payload)
-      .subscribe({
-        next: () => {
-          this.newCourse = {
-            courseName: '',
-            courseSummary: '',
-            price: undefined,
-            categoryId: undefined,
-            imageUrl: undefined
-          };
-
-          this.reloadData();
-        },
-
-        error: err => {
-          console.error(err);
-          this.errorMessage = '新增課程失敗';
-        }
-      });
+    this.courseService.save(payload).subscribe({
+      next: () => {
+        this.newCourse = {
+          courseName: '',
+          courseSummary: '',
+          price: undefined,
+          categoryId: undefined,
+          imageUrl: undefined
+        };
+        this.reloadData();
+      },
+      error: () => this.errorMessage = '新增課程失敗'
+    });
   }
 
-  onDeleteCourse(id: number | undefined): void {
+  onDeleteCourse(id?: number): void {
+    if (!id) return;
 
-    if (id === undefined) {
-      return;
-    }
-
-    this.courseService.deleteById(id)
-      .subscribe({
-        next: () => this.reloadData(),
-
-        error: err => {
-          console.error(err);
-          this.errorMessage = '刪除課程失敗';
-        }
-      });
+    this.courseService.deleteById(id).subscribe({
+      next: () => this.reloadData(),
+      error: () => this.errorMessage = '刪除課程失敗'
+    });
   }
 
   onToggleModify(course: Course): void {
-
     if (!course.isEditing) {
-      this.originalSnapshot.set(course, {
-        courseName: course.courseName,
-        courseSummary: course.courseSummary,
-        price: course.price,
-        categoryId: course.categoryId,
-        imageUrl: course.imageUrl
-      });
+      this.originalSnapshot.set(course, { ...course });
     }
-
     course.isEditing = true;
   }
 
   onCancelModify(course: Course): void {
-
     const snapshot = this.originalSnapshot.get(course);
-
     if (snapshot) {
-      course.courseName = snapshot.courseName;
-      course.courseSummary = snapshot.courseSummary;
-      course.price = snapshot.price;
-      course.categoryId = snapshot.categoryId;
-      course.imageUrl = snapshot.imageUrl;
+      Object.assign(course, snapshot);
+      course.isEditing = false;
     }
-
-    course.isEditing = false;
   }
 
   onUpdateCourse(course: Course): void {
+    if (!course.id) return;
 
-    if (course.id === undefined) {
-      return;
-    }
+    const payload = { ...course };
 
-    const payload: Course = {
-      id: course.id,
-      courseName: course.courseName.trim(),
-      courseSummary: course.courseSummary?.trim(),
-      price: course.price,
-      categoryId: course.categoryId,
-      imageUrl: course.imageUrl?.trim() || undefined
-    };
-
-    const error = this.validateCourse(
-      payload,
-      course.id
-    );
-
+    const error = this.validateCourse(payload, course.id);
     if (error) {
       this.errorMessage = error;
       return;
     }
 
-    this.courseService.save(payload)
-      .subscribe({
-        next: () => {
-          course.isEditing = false;
-          this.reloadData();
-        },
-
-        error: err => {
-          console.error(err);
-          this.errorMessage = '更新課程失敗';
-        }
-      });
+    this.courseService.save(payload).subscribe({
+      next: () => {
+        course.isEditing = false;
+        this.reloadData();
+      },
+      error: () => this.errorMessage = '更新課程失敗'
+    });
   }
 }

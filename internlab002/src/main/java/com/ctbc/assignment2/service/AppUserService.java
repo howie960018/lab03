@@ -2,6 +2,9 @@ package com.ctbc.assignment2.service;
 
 import com.ctbc.assignment2.bean.AppUser;
 import com.ctbc.assignment2.repository.AppUserRepository;
+
+import java.util.List;
+
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,6 +28,12 @@ public class AppUserService implements UserDetailsService {
         return userRepository.existsByUsername(username);
     }
 
+    public List<String> findUsernamesByRole(String role) {
+        return userRepository.findByRole(role).stream()
+                .map(AppUser::getUsername)
+                .toList();
+    }
+
     public AppUser registerUser(String username, String rawPassword) {
         return createUser(username, rawPassword, "USER");
     }
@@ -41,31 +50,25 @@ public class AppUserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    public AppUser findByUsername(String username)
-            throws UsernameNotFoundException {
+    public AppUser findByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
-    public boolean changePassword(String username, String currentRaw,
-                                  String newRaw) {
+    public boolean changePassword(String username, String currentRaw, String newRaw) {
         AppUser user = findByUsername(username);
-
         if (!passwordEncoder.matches(currentRaw, user.getPassword())) {
             return false;
         }
-
         user.setPassword(passwordEncoder.encode(newRaw));
         userRepository.save(user);
         return true;
     }
 
+    // 轉成 Spring Security 使用的 UserDetails
     @Override
-    public UserDetails loadUserByUsername(String username)
-            throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUser user = findByUsername(username);
-
         return User.withUsername(user.getUsername())
                 .password(user.getPassword())
                 .roles(user.getRole())

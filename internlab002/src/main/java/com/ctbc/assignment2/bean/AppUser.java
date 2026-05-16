@@ -28,6 +28,17 @@ public class AppUser {
     @Column(nullable = false, length = 20)
     private String role;
 
+    // ── Constructors ──────────────────────────────
+    public AppUser() {}
+
+    public AppUser(Long id, String username, String password, String role) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
+
+    // ── Getters & Setters ─────────────────────────
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

@@ -1,8 +1,8 @@
 package com.ctbc.assignment2.runner;
 
-
 import com.ctbc.assignment2.bean.CourseCategoryBean;
 import com.ctbc.assignment2.repository.CourseCategoryBeanRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -14,14 +14,15 @@ import java.util.List;
 
 @Component
 @Profile("!test")
-@Order(0) // 確保先建立類別，再建立課程
+@Order(0)
 public class SampleDataRunner2 implements CommandLineRunner {
 
     @Autowired
     private CourseCategoryBeanRepository categoryRepo;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
+
         System.out.println("========== 建立課程類別 ==========");
 
         List<String> categories = Arrays.asList(

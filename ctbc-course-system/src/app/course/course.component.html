@@ -1,115 +1,80 @@
 <div class="container py-4">
+  <h2 class="mb-4">課程管理</h2>
 
-  <!-- 標題 -->
-  <div class="d-flex align-items-center justify-content-between mb-3">
-    <h2 class="mb-0">課程管理</h2>
-
-    <div *ngIf="isLoading" class="d-flex align-items-center gap-2">
-      <div class="spinner-border spinner-border-sm"></div>
-      <span class="text-muted">處理中...</span>
-    </div>
-  </div>
-
-  <!-- 錯誤訊息 -->
-  <div *ngIf="errorMessage" class="alert alert-danger">
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
     {{ errorMessage }}
   </div>
 
-  <!-- 新增課程 -->
-  <div *ngIf="isLoggedIn" class="card mb-4">
+  <div class="card mb-4">
     <div class="card-header">新增課程</div>
-
     <div class="card-body">
       <form #courseForm="ngForm" (ngSubmit)="onAddCourse()">
-        <div class="row g-3">
+        <div class="row g-3 align-items-end">
 
-          <div class="col-md-4">
-            <label class="form-label">名稱</label>
-            <input
-              class="form-control"
-              [(ngModel)]="newCourse.courseName"
-              name="newName"
-              required>
+          <div class="col-md-3">
+            <label class="form-label">課程名稱 <span class="text-danger">*</span></label>
+            <input class="form-control" [(ngModel)]="newCourse.courseName" name="newName" required>
           </div>
 
-          <div class="col-md-4">
-            <label class="form-label">描述</label>
-            <input
-              class="form-control"
-              [(ngModel)]="newCourse.courseSummary"
-              name="newSummary">
+          <div class="col-md-3">
+            <label class="form-label">課程描述</label>
+            <input class="form-control" [(ngModel)]="newCourse.courseSummary" name="newSummary">
           </div>
 
           <div class="col-md-2">
             <label class="form-label">價格</label>
-            <input
-              type="number"
-              class="form-control"
-              [(ngModel)]="newCourse.price"
-              name="newPrice">
+            <input class="form-control" type="number" [(ngModel)]="newCourse.price" name="newPrice">
           </div>
 
           <div class="col-md-2">
             <label class="form-label">類別</label>
-            <select
-              class="form-select"
-              [(ngModel)]="newCourse.categoryId"
-              name="newCategory">
-              <option [ngValue]="undefined">— 不設類別 —</option>
+            <select class="form-select" [(ngModel)]="newCourse.categoryId" name="newCategory">
+              <option [ngValue]="undefined">-- 不設類別 --</option>
               <option *ngFor="let cat of categories" [ngValue]="cat.id">
                 {{ cat.categoryName }}
               </option>
             </select>
           </div>
 
-          <!-- imageUrl -->
-          <div class="col-md-6">
+          <div class="col-md-10">
             <label class="form-label">圖片網址</label>
-            <input
-              class="form-control"
-              placeholder="https://picsum.photos/600/300"
-              [(ngModel)]="newCourse.imageUrl"
-              name="newImageUrl">
+            <input class="form-control" placeholder="https://picsum.photos/600/300" [(ngModel)]="newCourse.imageUrl" name="newImageUrl">
           </div>
 
-          <div class="col-12">
-            <button
-              class="btn btn-primary"
-              type="submit"
-              [disabled]="courseForm.invalid || isLoading">
+          <div class="col-md-2">
+            <button class="btn btn-primary w-100" type="submit" [disabled]="courseForm.invalid || isLoading">
               新增
             </button>
           </div>
-
         </div>
       </form>
     </div>
   </div>
 
-  <!-- 課程列表 -->
   <div class="card">
     <div class="card-header">課程列表</div>
 
-    <!-- 搜尋 / 篩選 / 排序 -->
     <div class="row g-2 p-3 align-items-end">
 
       <div class="col-md-4">
         <label class="form-label">關鍵字</label>
-        <input
-          class="form-control"
-          placeholder="搜尋課程名稱或描述"
-          [(ngModel)]="keyword"
-          (ngModelChange)="search$.next($event)"
-          (keyup.enter)="onSearch()">
+        <input class="form-control" placeholder="搜尋課程名稱或描述" [(ngModel)]="keyword" (ngModelChange)="search$.next($event)" (keyup.enter)="onSearch()">
+      </div>
+
+      <div *ngIf="authService.isAdmin()" class="col-md-3">
+        <label class="form-label">講師</label>
+        <select class="form-select" [(ngModel)]="selectedInstructor" (ngModelChange)="onSearch()">
+          <option [ngValue]="undefined">-- 所有講師 --</option>
+          <option *ngFor="let i of instructors" [ngValue]="i">
+            {{ i }}
+          </option>
+        </select>
       </div>
 
       <div class="col-md-3">
         <label class="form-label">類別</label>
-        <select
-          class="form-select"
-          [(ngModel)]="selectedCategoryId"
-          (ngModelChange)="onSearch()">
-          <option [ngValue]="undefined">— 所有類別 —</option>
+        <select class="form-select" [(ngModel)]="selectedCategoryId" (ngModelChange)="onSearch()">
+          <option [ngValue]="undefined">-- 所有類別 --</option>
           <option *ngFor="let cat of categories" [ngValue]="cat.id">
             {{ cat.categoryName }}
           </option>
@@ -118,10 +83,7 @@
 
       <div class="col-md-3">
         <label class="form-label">排序</label>
-        <select
-          class="form-select"
-          [(ngModel)]="sort"
-          (ngModelChange)="onSortChange($event)">
+        <select class="form-select" [(ngModel)]="sort" (ngModelChange)="onSortChange($event)">
           <option value="id,asc">ID ↑</option>
           <option value="id,desc">ID ↓</option>
           <option value="price,asc">價格 ↑</option>
@@ -132,29 +94,27 @@
       </div>
 
       <div class="col-md-2">
-        <button
-          class="btn btn-outline-primary w-100"
-          (click)="onSearch()">
+        <button class="btn btn-outline-primary w-100" (click)="onSearch()">
           查詢
         </button>
       </div>
-
     </div>
 
-    <!-- 表格 -->
     <div class="card-body p-0">
       <div class="table-responsive">
         <table class="table table-striped mb-0 align-middle">
-
           <thead>
             <tr>
               <th>ID</th>
               <th>名稱</th>
+              <th>講師</th>
               <th>描述</th>
               <th>價格</th>
               <th>類別</th>
               <th style="width:260px">圖片網址</th>
-              <th *ngIf="isLoggedIn">操作</th>
+              <th *ngIf="authService.isAdmin() || authService.isInstructor()">
+                操作
+              </th>
             </tr>
           </thead>
 
@@ -163,166 +123,100 @@
 
               <td>{{ c.id }}</td>
 
-              <!-- 名稱 -->
               <td>
                 <ng-container *ngIf="c.isEditing; else viewName">
-                  <input
-                    class="form-control form-control-sm"
-                    [(ngModel)]="c.courseName"
-                    [name]="'name-' + c.id">
+                  <input class="form-control form-control-sm" [(ngModel)]="c.courseName" [name]="'name-' + c.id">
                 </ng-container>
-
-                <ng-template #viewName>
-                  {{ c.courseName }}
-                </ng-template>
+                <ng-template #viewName>{{ c.courseName }}</ng-template>
               </td>
 
-              <!-- 描述 -->
+              <td>{{ c.instructor?.username }}</td>
+
               <td>
                 <ng-container *ngIf="c.isEditing; else viewSummary">
-                  <input
-                    class="form-control form-control-sm"
-                    [(ngModel)]="c.courseSummary"
-                    [name]="'summary-' + c.id">
+                  <input class="form-control form-control-sm" [(ngModel)]="c.courseSummary" [name]="'summary-' + c.id">
                 </ng-container>
-
-                <ng-template #viewSummary>
-                  {{ c.courseSummary }}
-                </ng-template>
+                <ng-template #viewSummary>{{ c.courseSummary }}</ng-template>
               </td>
 
-              <!-- 價格 -->
               <td>
                 <ng-container *ngIf="c.isEditing; else viewPrice">
-                  <input
-                    type="number"
-                    class="form-control form-control-sm"
-                    [(ngModel)]="c.price"
-                    [name]="'price-' + c.id">
+                  <input type="number" class="form-control form-control-sm" [(ngModel)]="c.price" [name]="'price-' + c.id">
                 </ng-container>
-
-                <ng-template #viewPrice>
-                  {{ c.price }}
-                </ng-template>
+                <ng-template #viewPrice>{{ c.price }}</ng-template>
               </td>
 
-              <!-- 類別 -->
               <td>
                 <ng-container *ngIf="c.isEditing; else viewCategory">
-                  <select
-                    class="form-select form-select-sm"
-                    [(ngModel)]="c.categoryId"
-                    [name]="'category-' + c.id">
-                    <option [ngValue]="undefined">—</option>
+                  <select class="form-select form-select-sm" [(ngModel)]="c.categoryId" [name]="'category-' + c.id">
+                    <option [ngValue]="undefined">--</option>
                     <option *ngFor="let cat of categories" [ngValue]="cat.id">
                       {{ cat.categoryName }}
                     </option>
                   </select>
                 </ng-container>
-
                 <ng-template #viewCategory>
                   {{ getCategoryName(c.categoryId) }}
                 </ng-template>
               </td>
 
-              <!-- imageUrl -->
               <td>
                 <ng-container *ngIf="c.isEditing; else viewImageUrl">
-                  <input
-                    class="form-control form-control-sm"
-                    placeholder="https://picsum.photos/600/300"
-                    [(ngModel)]="c.imageUrl"
-                    [name]="'imageUrl-' + c.id">
+                  <input class="form-control form-control-sm" placeholder="https://picsum.photos/600/300" [(ngModel)]="c.imageUrl" [name]="'imageUrl-' + c.id">
                 </ng-container>
 
                 <ng-template #viewImageUrl>
-                  <span
-                    *ngIf="c.imageUrl; else noImageUrl"
-                    class="text-muted small"
-                    style="word-break: break-all;">
+                  <span *ngIf="c.imageUrl; else noImageUrl" class="text-muted small" style="word-break: break-all;">
                     {{ c.imageUrl }}
                   </span>
-
                   <ng-template #noImageUrl>
                     <span class="text-muted small">未設定</span>
                   </ng-template>
                 </ng-template>
               </td>
 
-              <!-- 操作 -->
-              <td *ngIf="isLoggedIn">
+              <td *ngIf="authService.isAdmin() || isOwner(c)">
                 <div class="btn-group btn-group-sm">
-
-                  <button
-                    *ngIf="!c.isEditing"
-                    class="btn btn-outline-secondary"
-                    (click)="onToggleModify(c)">
+                  <button *ngIf="!c.isEditing" class="btn btn-outline-secondary" (click)="onToggleModify(c)">
                     編輯
                   </button>
-
-                  <button
-                    *ngIf="c.isEditing"
-                    class="btn btn-success"
-                    (click)="onUpdateCourse(c)">
+                  <button *ngIf="c.isEditing" class="btn btn-success" (click)="onUpdateCourse(c)">
                     儲存
                   </button>
-
-                  <button
-                    *ngIf="c.isEditing"
-                    class="btn btn-outline-secondary"
-                    (click)="onCancelModify(c)">
+                  <button *ngIf="c.isEditing" class="btn btn-outline-secondary" (click)="onCancelModify(c)">
                     取消
                   </button>
-
-                  <button
-                    class="btn btn-outline-danger"
-                    (click)="onDeleteCourse(c.id)">
+                  <button class="btn btn-outline-danger" (click)="onDeleteCourse(c.id)">
                     刪除
                   </button>
-
                 </div>
               </td>
 
             </tr>
 
             <tr *ngIf="!isLoading && courses.length === 0">
-              <td colspan="7" class="text-center text-muted py-4">
+              <td colspan="8" class="text-center text-muted py-4">
                 目前沒有資料
               </td>
             </tr>
-
           </tbody>
-
         </table>
       </div>
     </div>
+  </div>
 
-    <!-- 分頁 -->
-    <div class="d-flex justify-content-between align-items-center p-3">
-
-      <div class="text-muted">
-        第 {{ page + 1 }} / {{ totalPages }} 頁
-        （共 {{ totalElements }} 筆）
-      </div>
-
-      <div class="btn-group">
-        <button
-          class="btn btn-outline-secondary btn-sm"
-          (click)="goPrev()"
-          [disabled]="page === 0 || isLoading">
-          上一頁
-        </button>
-
-        <button
-          class="btn btn-outline-secondary btn-sm"
-          (click)="goNext()"
-          [disabled]="page + 1 >= totalPages || isLoading">
-          下一頁
-        </button>
-      </div>
-
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <div class="text-muted">
+      第 {{ page + 1 }} / {{ totalPages }} 頁 (共 {{ totalElements }} 筆)
     </div>
-
+    <div class="btn-group">
+      <button class="btn btn-outline-secondary btn-sm" (click)="goPrev()" [disabled]="page === 0 || isLoading">
+        上一頁
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" (click)="goNext()" [disabled]="page + 1 >= totalPages || isLoading">
+        下一頁
+      </button>
+    </div>
   </div>
 
 </div>

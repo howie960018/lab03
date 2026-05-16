@@ -21,7 +21,7 @@
     </properties>
 
     <dependencies>
-        <!-- 1. 新增 Lombok 依賴 -->
+        <!-- 1. ?��? Lombok 依賴 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -104,6 +104,20 @@
 
     <build>
         <plugins>
+            <!-- 確�? Maven 編譯?��??��? Lombok annotation processing -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>`
+                        <version>${lombok.version}</version>`
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -127,7 +141,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <!-- 2. 設定編譯插件以排除 Lombok (優化打包大小) -->
+                <!-- 2. 設�?編譯?�件以�???Lombok (?��??��?大�?) -->
                 <configuration>
                     <excludes>
                         <exclude>

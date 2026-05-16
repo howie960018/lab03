@@ -6,8 +6,12 @@ export interface Course {
   courseSummary?: string;
   courseDescription?: string;
   price?: number;
-  category?: Category;
+  imageUrl?: string;
   categoryId?: number;
-  imageUrl?: string; // ✅ 新增
+  category?: Category;
+  instructor?: {
+    id: number;
+    username: string;
+  };
   isEditing?: boolean;
 }

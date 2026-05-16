@@ -1,8 +1,8 @@
+
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
 import { Course } from '../models/course';
 import { Page } from '../models/page';
 
@@ -13,71 +13,59 @@ export class CourseService {
 
   private readonly apiBase = '';
 
-  constructor(private readonly http: HttpClient) { }
+  constructor(private readonly http: HttpClient) {}
 
-  getAll(): Observable<Course[]> {
-    return this.http.get<Course[]>(
-      `${this.apiBase}/api/course/all`
-    ).pipe(
-      map((courses) =>
-        (courses ?? []).map((c) => ({
-          ...c,
-          categoryId: c.category?.id
-        }))
-      )
-    );
-  }
-
+  /**
+   * 取得分頁、搜尋與過濾後的課程列表
+   */
   getPage(
     page: number,
     size: number,
     keyword?: string,
     categoryId?: number,
-    sort = 'id,asc'
-  ) {
-
-    const params = new URLSearchParams({
-      page: page.toString(),
-      size: size.toString(),
-      sort
-    });
+    sort?: string,
+    instructor?: string
+  ): Observable<Page<Course>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
 
     if (keyword) {
-      params.append('keyword', keyword);
+      params = params.set('keyword', keyword);
+    }
+    if (categoryId !== undefined && categoryId !== null) {
+      params = params.set('categoryId', categoryId.toString());
+    }
+    if (sort) {
+      params = params.set('sort', sort);
+    }
+    if (instructor) {
+      params = params.set('instructor', instructor);
     }
 
-    if (categoryId !== undefined) {
-      params.append('categoryId', String(categoryId));
-    }
-
-    return this.http
-      .get<Page<Course>>(
-        `/api/course?${params.toString()}`
-      )
-      .pipe(
-        map((p) => ({
-          ...p,
-          content: p.content.map((c) => ({
-            ...c,
-            categoryId: c.category?.id
-          }))
-        }))
-      );
+    return this.http.get<Page<Course>>(`${this.apiBase}/api/course`, { params });
   }
 
+  /**
+   * 取得所有講師的名稱列表
+   */
+  getInstructors(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiBase}/api/course/instructors`);
+  }
+
+  /**
+   * 根據 ID 取得單一課程
+   */
   getById(id: number): Observable<Course> {
-    return this.http.get<Course>(
-      `${this.apiBase}/api/course/${id}`
-    ).pipe(
-      map((c) => ({
-        ...c,
-        categoryId: c.category?.id
-      }))
+    return this.http.get<Course>(`${this.apiBase}/api/course/${id}`).pipe(
+      map((c) => ({ ...c, categoryId: c.category?.id }))
     );
   }
 
+  /**
+   * 儲存 (新增/修改) 課程
+   */
   save(course: Course): Observable<Course> {
-
     const payload: any = {
       id: course.id,
       courseName: course.courseName,
@@ -87,36 +75,36 @@ export class CourseService {
       imageUrl: course.imageUrl
     };
 
-    if (
-      course.categoryId !== undefined &&
-      course.categoryId !== null
-    ) {
-
-      return this.http.post<Course>(
-        `${this.apiBase}/api/course/category/${course.categoryId}`,
-        payload
-      ).pipe(
-        map((c) => ({
-          ...c,
-          categoryId: c.category?.id
-        }))
-      );
+    // 若有選擇類別，則打包含類別 ID 的 API 路徑
+    if (course.categoryId !== undefined && course.categoryId !== null) {
+      return this.http
+        .post<Course>(`${this.apiBase}/api/course/category/${course.categoryId}`, payload)
+        .pipe(map(c => ({ ...c, categoryId: c.category?.id })));
     }
 
-    return this.http.post<Course>(
-      `${this.apiBase}/api/course`,
-      payload
-    ).pipe(
-      map((c) => ({
-        ...c,
-        categoryId: c.category?.id
-      }))
-    );
+    // 若未設定類別，則打一般新增路徑
+    return this.http
+      .post<Course>(`${this.apiBase}/api/course`, payload)
+      .pipe(map(c => ({ ...c, categoryId: c.category?.id })));
   }
 
+  /**
+   * 刪除課程
+   */
   deleteById(id: number): Observable<void> {
-    return this.http.delete<void>(
-      `${this.apiBase}/api/course/${id}`
-    );
+    return this.http.delete<void>(`${this.apiBase}/api/course/${id}`);
   }
+
+  /**
+   * 更新課程的關聯類別
+   */
+  updateCategory(courseId: number, categoryId: number): Observable<Course> {
+    return this.http
+      .put<Course>(`/api/course/${courseId}/category/${categoryId}`, {})
+      .pipe(
+        map(c => ({ ...c, categoryId: c.category?.id }))
+      );
+  }
+
+
 }

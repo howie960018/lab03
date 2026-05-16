@@ -1,7 +1,7 @@
+
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, EMPTY, finalize, switchMap } from 'rxjs';
-
+import { finalize } from 'rxjs';
 import { AuthService } from '../auth.service';
 
 @Component({
@@ -10,58 +10,52 @@ import { AuthService } from '../auth.service';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
+
   username = '';
   password = '';
   confirmPassword = '';
-
   isLoading = false;
   errorMessage = '';
   successMessage = '';
 
-  constructor(private readonly authService: AuthService, private readonly router: Router) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly router: Router
+  ) {}
 
   onSubmit(): void {
-    const username = this.username.trim();
-
     this.isLoading = true;
     this.errorMessage = '';
     this.successMessage = '';
 
     this.authService
       .register({
-        username,
+        username: this.username.trim(),
         password: this.password,
         confirmPassword: this.confirmPassword
       })
       .pipe(
-        switchMap(() =>
-          this.authService.login({ username, password: this.password }).pipe(
-            catchError((err) => {
-              console.error(err);
-              this.successMessage = '註冊成功，但自動登入失敗，請手動登入。';
-              this.router.navigate(['/login']);
-              return EMPTY;
-            })
-          )
-        ),
         finalize(() => (this.isLoading = false))
       )
       .subscribe({
         next: () => {
-          this.successMessage = '註冊成功，已自動登入。';
-          this.router.navigate(['/categories']);
+          this.successMessage = '註冊成功';
+          setTimeout(() => this.router.navigate(['/courses']), 600);
         },
         error: (err) => {
           console.error(err);
           const status = err?.status as number | undefined;
+
           if (status === 409) {
             this.errorMessage = '註冊失敗：帳號已存在。';
             return;
           }
+
           if (status === 400) {
             this.errorMessage = '註冊失敗：請確認密碼與確認密碼一致，且格式符合要求。';
             return;
           }
+
           this.errorMessage = '註冊失敗，請稍後再試。';
         }
       });

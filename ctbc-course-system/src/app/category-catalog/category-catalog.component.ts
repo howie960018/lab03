@@ -1,6 +1,6 @@
+
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-
 import { Category } from '../models/category';
 import { CategoryService } from '../services/category.service';
 
@@ -19,10 +19,9 @@ export class CategoryCatalogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadCategories(); // ✅ 現在存在了
+    this.loadCategories();
   }
 
-  /** ✅ 載入所有類別（前台用） */
   loadCategories(): void {
     this.categoryService.getAll().subscribe({
       next: data => this.categories = data ?? [],
@@ -35,7 +34,6 @@ export class CategoryCatalogComponent implements OnInit {
 
   goToCategory(category: Category): void {
     if (!category.id) return;
-
     this.router.navigate(['/courses'], {
       queryParams: {
         category: category.id,
